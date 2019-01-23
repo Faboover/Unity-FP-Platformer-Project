@@ -8,6 +8,8 @@ public class PlayerMovement : MonoBehaviour
 
     public RotationAxes axes = RotationAxes.MouseXAndY;
 
+    public GameObject playerCam;
+
     public float sensitivityX = 5F;
     public float joySensitivityX = 10F;
 
@@ -26,6 +28,8 @@ public class PlayerMovement : MonoBehaviour
     // Used for knowing when the player is back on a flat or tagged ground object
     public bool onGround = false;
 
+    public bool airJumped = false;
+
     // Used to know when the player is sprinting
     public bool isSprinting = false;
 
@@ -34,6 +38,7 @@ public class PlayerMovement : MonoBehaviour
     public bool isSliding = false;
     public bool readytoSlide = false;
 
+    public float slideMultiplier;
 
     // Vertical upward force to throw the player up when jumping
     // Set in the Unity Inspecter
@@ -44,6 +49,8 @@ public class PlayerMovement : MonoBehaviour
     // Set in the Unity Inspecter
     public Vector3 slidejumpForce;
 
+    public Vector3 slideForce;
+
     // This is used to know whether or not the game has been paused
     public GameObject eventHandler;
 
@@ -51,6 +58,8 @@ public class PlayerMovement : MonoBehaviour
     void Start ()
     {
         speed = moveSpeed;
+
+        playerCam = GameObject.FindGameObjectWithTag("MainCamera");
 
         // Event Handler not yet made, starting with basic moving for both controller
         // and mouse and keyboard
@@ -76,6 +85,7 @@ public class PlayerMovement : MonoBehaviour
         if (obj.gameObject.CompareTag("Ground"))
         {
             onGround = true;
+            airJumped = false;
         }
     }
 
@@ -103,23 +113,27 @@ public class PlayerMovement : MonoBehaviour
             Debug.Log("Slide Jump: OnGround isSliding");
             this.GetComponent<Rigidbody>().AddForce(slidejumpForce);
         }
-        else
+        else if (!onGround && !airJumped)
         {
-            Debug.Log("Else Jump:");
+            Debug.Log("Air Jump:");
+            airJumped = true;
             this.GetComponent<Rigidbody>().AddForce(jumpForce);
         }
     }
 
     void Sprint()
     {
-
+        speed = sprintSpeed;
+        isSprinting = true;
     }
 
-    void Slide()
+    void Slide(float xVel, float zVel)
     {
         if (onGround && isSprinting)
         {
             isSliding = true;
+
+            this.GetComponent<Rigidbody>().AddForce(new Vector3 (xVel * slideMultiplier, 0, zVel * slideMultiplier));
         }
     }
 
@@ -132,7 +146,7 @@ public class PlayerMovement : MonoBehaviour
 
         // Its best to look up for yourself what is going on from this point on
         // This was code that I got by looking for a way to do a first person camera
-        transform.Translate(new Vector3(z_velocity, 0, -x_velocity));
+        transform.Translate(new Vector3(x_velocity, 0, z_velocity));
 
         if (axes == RotationAxes.MouseXAndY)
         {
@@ -157,6 +171,16 @@ public class PlayerMovement : MonoBehaviour
             Jump();
         }
 
+        if (Input.GetButtonDown("Sprint"))
+        {
+            Sprint();
+        }
+        else if (Input.GetAxis("Vertical") <= 0)
+        {
+            isSprinting = false;
+            speed = moveSpeed;
+        }
+
         if (Input.GetButtonDown("Slide"))
         {
             if (readytoSlide)
@@ -166,7 +190,7 @@ public class PlayerMovement : MonoBehaviour
             else
             {
                 readytoSlide = true;
-                Slide();
+                Slide(x_velocity, z_velocity);
             }
         }
     }

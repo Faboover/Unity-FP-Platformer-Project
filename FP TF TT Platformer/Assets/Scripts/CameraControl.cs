@@ -32,7 +32,7 @@ public class CameraControl : MonoBehaviour
             //rotationX = Mathf.Clamp (rotationX, minimumY, maximumY);
             if (rotationX <= 60.0f || rotationX >= 300.0f)
             {
-                transform.localEulerAngles = new Vector3(rotationX, 90, 0);
+                transform.localEulerAngles = new Vector3(rotationX, 0, 0);
             }
 
         }
