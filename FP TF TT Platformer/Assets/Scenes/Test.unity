@@ -357,6 +357,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   axes: 0
   sensitivityY: 5
+  joySensitivityY: 25
   minimumY: -60
   maximumY: 60
 --- !u!1 &1718839685
