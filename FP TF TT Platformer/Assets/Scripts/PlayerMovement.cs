@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -10,8 +11,14 @@ public class PlayerMovement : MonoBehaviour
 
     public GameObject playerCam;
 
+    public Text test;
+
     public float sensitivityX = 5F;
     public float joySensitivityX = 10F;
+
+    // Moves body left, right, forward and back
+    float x_velocity;
+    float z_velocity;
 
     // Set the min and max of the rotation
     public float minimumX = -360F;
@@ -28,15 +35,18 @@ public class PlayerMovement : MonoBehaviour
     // Used for knowing when the player is back on a flat or tagged ground object
     public bool onGround = false;
 
+    public bool onWall = false;
+
     public bool airJumped = false;
 
     // Used to know when the player is sprinting
     public bool isSprinting = false;
+    public bool isMoving = false;
 
     // Used for knowing whether the player is sliding or ready to slide
-    // Ready to slide is for when the player hits the slide button while in the air
+    // isCrouched is for when the player hits the slide while not sprinting
     public bool isSliding = false;
-    public bool readytoSlide = false;
+    public bool isCrouched = false;
 
     public float slideMultiplier;
 
@@ -69,14 +79,25 @@ public class PlayerMovement : MonoBehaviour
     // All collision instances
     void OnCollisionEnter(Collision obj)
     {
+        /*
+        if (CollisionFlags.CollidedBelow != 0)
+        {
+            onGround = true;
+        }
+        */
+
         if (obj.gameObject.CompareTag("Ground"))
         {
             onGround = true;
             
-            if (readytoSlide)
+            if (isCrouched)
             {
-                isSliding = true;
+                Slide(x_velocity, z_velocity);
             }
+        }
+        else if (obj.gameObject.CompareTag("Wall"))
+        {
+            onWall = true;
         }
     }
 
@@ -102,20 +123,24 @@ public class PlayerMovement : MonoBehaviour
     // wall running
     void Jump()
     {
+        // Cancels slide
+        isCrouched = false;
+        isSliding = false;
+
         Debug.Log("Jump Function entered");
         if (onGround && !isSliding)
         {
-            Debug.Log("Normal Jump: OnGround !isSliding");
+            //Debug.Log("Normal Jump: OnGround !isSliding");
             this.GetComponent<Rigidbody>().AddForce(jumpForce);
         }
         else if (onGround && isSliding)
         {
-            Debug.Log("Slide Jump: OnGround isSliding");
+            //Debug.Log("Slide Jump: OnGround isSliding");
             this.GetComponent<Rigidbody>().AddForce(slidejumpForce);
         }
         else if (!onGround && !airJumped)
         {
-            Debug.Log("Air Jump:");
+            //Debug.Log("Air Jump:");
             airJumped = true;
             this.GetComponent<Rigidbody>().AddForce(jumpForce);
         }
@@ -123,30 +148,74 @@ public class PlayerMovement : MonoBehaviour
 
     void Sprint()
     {
+        // Cancels Slide
+        isCrouched = false;
+        isSliding = false;
+
         speed = sprintSpeed;
         isSprinting = true;
     }
 
     void Slide(float xVel, float zVel)
     {
-        if (onGround && isSprinting)
+        Debug.Log("Entered Slide Function");
+
+        if ((onGround && isSprinting)) //|| (onGround && isCrouched))
         {
             isSliding = true;
 
-            this.GetComponent<Rigidbody>().AddForce(new Vector3 (xVel * slideMultiplier, 0, zVel * slideMultiplier));
+            Debug.Log("Ground Sliding!!");
+            //this.GetComponent<Rigidbody>().AddForce(new Vector3 (xVel * slideMultiplier, 0, zVel * slideMultiplier));
+
+            this.GetComponent<Rigidbody>().AddForce(this.GetComponent<Rigidbody>().velocity * slideMultiplier);
         }
+
+        // For sliding after jumping, need to know the player velocity and whether it is as fast as sprinting.
     }
 
     // Update is called once per frame
     void Update ()
     {
         // Moves body left, right, forward and back
-        float x_velocity = Input.GetAxisRaw("Horizontal") * speed;
-        float z_velocity = Input.GetAxisRaw("Vertical") * speed;
+        x_velocity = Input.GetAxisRaw("Horizontal") * speed;
+        z_velocity = Input.GetAxisRaw("Vertical") * speed;
+
+        float h = Mathf.Sqrt(Mathf.Pow(x_velocity, 2) + Mathf.Pow(z_velocity, 2));
+
+        float newx_velocity = Mathf.Sin(Mathf.Deg2Rad * this.transform.localEulerAngles.y) * h;
+        float newz_velocity = Mathf.Cos(Mathf.Deg2Rad * this.transform.localEulerAngles.y) * h;
+
+        
+
+        //Debug.Log(this.GetComponent<Rigidbody>().velocity);
+
+        test.text = "Player Y Rotation - " + this.transform.localEulerAngles.y
+            + "\nH - " + h
+            + "\nXVel - " + x_velocity + "\nZVel - " + z_velocity
+            + "\nNew XVel - " + newx_velocity + "\nNew ZVel - " + newz_velocity;
+
+        if (Input.GetAxis("Vertical") != 0 || Input.GetAxis("Horizontal") != 0)
+        {
+            isMoving = true;
+        }
+        else
+        {
+            isMoving = false;
+        }
 
         // Its best to look up for yourself what is going on from this point on
         // This was code that I got by looking for a way to do a first person camera
-        transform.Translate(new Vector3(x_velocity, 0, z_velocity));
+        //transform.Translate(new Vector3(x_velocity, 0, z_velocity));
+        if (isMoving)
+        {
+            this.GetComponent<Rigidbody>().AddForce(new Vector3(newx_velocity, 0, newz_velocity));
+        }
+        else if (!isMoving && onGround && !isSliding)
+        {
+            this.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
+        }
+
+
 
         if (axes == RotationAxes.MouseXAndY)
         {
@@ -167,7 +236,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetButtonDown("Jump"))
         {
-            Debug.Log("Jump Button Pressed!!");
+            //Debug.Log("Jump Button Pressed!!");
             Jump();
         }
 
@@ -183,13 +252,13 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetButtonDown("Slide"))
         {
-            if (readytoSlide)
+            if (isCrouched)
             {
-                readytoSlide = false;
+                isCrouched = false;
             }
             else
             {
-                readytoSlide = true;
+                isCrouched = true;
                 Slide(x_velocity, z_velocity);
             }
         }
