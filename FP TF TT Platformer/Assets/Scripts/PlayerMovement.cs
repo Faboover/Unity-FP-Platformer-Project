@@ -11,6 +11,8 @@ public class PlayerMovement : MonoBehaviour
 
     public GameObject playerCam;
 
+    public Rigidbody rigid;
+
     public Text test;
 
     public float sensitivityX = 5F;
@@ -19,6 +21,8 @@ public class PlayerMovement : MonoBehaviour
     // Moves body left, right, forward and back
     float x_velocity;
     float z_velocity;
+    float newx_velocity;
+    float newz_velocity;
 
     // Set the min and max of the rotation
     public float minimumX = -360F;
@@ -70,6 +74,8 @@ public class PlayerMovement : MonoBehaviour
         speed = moveSpeed;
 
         playerCam = GameObject.FindGameObjectWithTag("MainCamera");
+
+        rigid = this.GetComponent<Rigidbody>();
 
         // Event Handler not yet made, starting with basic moving for both controller
         // and mouse and keyboard
@@ -180,19 +186,29 @@ public class PlayerMovement : MonoBehaviour
         x_velocity = Input.GetAxisRaw("Horizontal") * speed;
         z_velocity = Input.GetAxisRaw("Vertical") * speed;
 
+        float yRotation = this.transform.localEulerAngles.y;
+
         float h = Mathf.Sqrt(Mathf.Pow(x_velocity, 2) + Mathf.Pow(z_velocity, 2));
 
-        float newx_velocity = Mathf.Sin(Mathf.Deg2Rad * this.transform.localEulerAngles.y) * h;
-        float newz_velocity = Mathf.Cos(Mathf.Deg2Rad * this.transform.localEulerAngles.y) * h;
-
         
+        if (Input.GetAxis("Vertical") > 0 && Input.GetAxis("Horizontal") == 0)
+        {
+            newx_velocity = Mathf.Sin(Mathf.Deg2Rad * yRotation) * h;
+            newz_velocity = Mathf.Cos(Mathf.Deg2Rad * yRotation) * h;
+        }
+        else if (Input.GetAxis("Vertical") > 0 && Input.GetAxis("Horizontal") > 0)
+        {
+            newx_velocity = Mathf.Sin(Mathf.Deg2Rad * (90 - yRotation)) * h;
+            newz_velocity = Mathf.Cos(Mathf.Deg2Rad * yRotation) * h;
+        }
 
         //Debug.Log(this.GetComponent<Rigidbody>().velocity);
 
         test.text = "Player Y Rotation - " + this.transform.localEulerAngles.y
             + "\nH - " + h
             + "\nXVel - " + x_velocity + "\nZVel - " + z_velocity
-            + "\nNew XVel - " + newx_velocity + "\nNew ZVel - " + newz_velocity;
+            + "\nNew XVel - " + newx_velocity + "\nNew ZVel - " + newz_velocity
+            + "\nActual Vel - " + rigid.velocity;
 
         if (Input.GetAxis("Vertical") != 0 || Input.GetAxis("Horizontal") != 0)
         {
@@ -203,16 +219,19 @@ public class PlayerMovement : MonoBehaviour
             isMoving = false;
         }
 
-        // Its best to look up for yourself what is going on from this point on
-        // This was code that I got by looking for a way to do a first person camera
-        //transform.Translate(new Vector3(x_velocity, 0, z_velocity));
         if (isMoving)
         {
-            this.GetComponent<Rigidbody>().AddForce(new Vector3(newx_velocity, 0, newz_velocity));
+            // AddForce does not create constant movement, GIVE THE PLAYER A NEW VELOCITY BASED ON INPUT
+            //this.GetComponent<Rigidbody>().AddForce(new Vector3(newx_velocity, 0, newz_velocity));
+
+            //rigid.velocity = new Vector3(newx_velocity, rigid.velocity.y, newz_velocity);
+
+            // Not Physics based!
+            rigid.MovePosition(transform.position + (transform.forward * Input.GetAxis("Vertical") * speed) + (transform.right * Input.GetAxis("Horizontal") * speed));
         }
         else if (!isMoving && onGround && !isSliding)
         {
-            this.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
+            rigid.velocity = new Vector3(0, 0, 0);
         }
 
 
@@ -228,10 +247,15 @@ public class PlayerMovement : MonoBehaviour
             }
             else
             {
-                rotationY = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * sensitivityX;
+                //rotationY = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * sensitivityX;
+
+                rigid.MoveRotation(rigid.rotation * Quaternion.Euler(new Vector3(0, Input.GetAxis("Mouse X") * sensitivityX, 0)));
             }
 
-            transform.localEulerAngles = new Vector3(0, rotationY, 0);
+            // Would Stop Rigid.MovePostion from running!
+            //transform.localEulerAngles = new Vector3(0, rotationY, 0);
+
+            
         }
 
         if (Input.GetButtonDown("Jump"))
