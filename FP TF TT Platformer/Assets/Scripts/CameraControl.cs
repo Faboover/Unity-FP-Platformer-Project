@@ -38,7 +38,7 @@ public class CameraControl : MonoBehaviour
             }
             else
             {
-                rotationX = transform.localEulerAngles.x + Input.GetAxis("Mouse Y") * sensitivityY;
+                rotationX = transform.localEulerAngles.x - Input.GetAxis("Mouse Y") * sensitivityY;
             }
 
             //rotationX = Mathf.Clamp (rotationX, minimumY, maximumY);

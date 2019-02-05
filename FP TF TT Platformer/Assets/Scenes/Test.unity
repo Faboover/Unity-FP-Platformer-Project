@@ -811,6 +811,7 @@ GameObject:
   - component: {fileID: 1846422100}
   - component: {fileID: 1846422101}
   - component: {fileID: 1846422102}
+  - component: {fileID: 1846422103}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -906,13 +907,14 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1846422095}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 45950d3d2f597fb41983853b41e0beac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   axes: 0
   playerCam: {fileID: 0}
+  rigid: {fileID: 0}
   test: {fileID: 375815188}
   sensitivityX: 5
   joySensitivityX: 25
@@ -950,6 +952,23 @@ MonoBehaviour:
   normalPos: {x: 0, y: 0, z: 0}
   smoothing: 0
   transformed: 0
+--- !u!114 &1846422103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1846422095}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5774edc3bef124944aa181c1fe9345ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 10
+  gravity: 10
+  maxVelocityChange: 10
+  canJump: 1
+  jumpHeight: 2
+  sensitivityX: 5
 --- !u!1 &1856388253
 GameObject:
   m_ObjectHideFlags: 0
