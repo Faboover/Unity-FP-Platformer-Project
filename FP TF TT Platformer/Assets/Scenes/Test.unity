@@ -907,7 +907,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1846422095}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 45950d3d2f597fb41983853b41e0beac, type: 3}
   m_Name: 
@@ -923,6 +923,7 @@ MonoBehaviour:
   moveSpeed: 10
   sprintSpeed: 20
   speed: 0
+  maxVelocityChange: 10
   onGround: 0
   onWall: 0
   airJumped: 0
@@ -931,8 +932,8 @@ MonoBehaviour:
   isSliding: 0
   isCrouched: 0
   slideMultiplier: 10
-  jumpForce: {x: 0, y: 350, z: 0}
-  slidejumpForce: {x: 0, y: 200, z: 0}
+  jumpForce: {x: 0, y: 20, z: 0}
+  slidejumpForce: {x: 0, y: 15, z: 0}
   slideForce: {x: 0, y: 0, z: 0}
   eventHandler: {fileID: 0}
 --- !u!114 &1846422102
@@ -958,7 +959,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1846422095}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5774edc3bef124944aa181c1fe9345ee, type: 3}
   m_Name: 
