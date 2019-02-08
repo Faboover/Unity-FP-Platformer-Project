@@ -31,6 +31,7 @@ public class PlayerMovement : MonoBehaviour
     public float sprintSpeed = 0.3f;
     public float speed;
     public float maxVelocityChange = 10.0f;
+    public float gravity = 9.8f;
 
     // Used for vertical Rotation, turning left or right
     float rotationY = 0.0f;
@@ -75,6 +76,7 @@ public class PlayerMovement : MonoBehaviour
         playerCam = GameObject.FindGameObjectWithTag("MainCamera");
 
         rigid = this.GetComponent<Rigidbody>();
+        rigid.useGravity = false;
 
         // Event Handler not yet made, starting with basic moving for both controller
         // and mouse and keyboard
@@ -182,7 +184,7 @@ public class PlayerMovement : MonoBehaviour
             Debug.Log("Ground Sliding!!");
             //this.GetComponent<Rigidbody>().AddForce(new Vector3 (xVel * slideMultiplier, 0, zVel * slideMultiplier));
 
-            this.GetComponent<Rigidbody>().AddForce(this.GetComponent<Rigidbody>().velocity * slideMultiplier);
+            rigid.AddForce(rigid.velocity * slideMultiplier);
         }
 
         // For sliding after jumping, need to know the player velocity and whether it is as fast as sprinting.
@@ -207,10 +209,15 @@ public class PlayerMovement : MonoBehaviour
         Vector3 velocityChange = (targetVelocity - velocity);
         velocityChange.x = Mathf.Clamp(velocityChange.x, -maxVelocityChange, maxVelocityChange);
         velocityChange.z = Mathf.Clamp(velocityChange.z, -maxVelocityChange, maxVelocityChange);
-        velocityChange.y =  ;
+        //velocityChange.y =  ;
+
+
         rigid.AddForce(velocityChange, ForceMode.VelocityChange);
 
         //rigid.velocity = velocityChange;
+
+        // We apply gravity manually for more tuning control
+        GetComponent<Rigidbody>().AddForce(new Vector3(0, -gravity * GetComponent<Rigidbody>().mass, 0));
 
         test.text = "Target Velocity: " + targetVelocity +
             "\nVelocity Change: " + velocityChange +
@@ -232,11 +239,6 @@ public class PlayerMovement : MonoBehaviour
 
                 rigid.MoveRotation(rigid.rotation * Quaternion.Euler(new Vector3(0, Input.GetAxis("Mouse X") * sensitivityX, 0)));
             }
-
-            // Would Stop Rigid.MovePostion from running!
-            //transform.localEulerAngles = new Vector3(0, rotationY, 0);
-
-            
         }
 
         if (Input.GetButtonDown("Jump"))
