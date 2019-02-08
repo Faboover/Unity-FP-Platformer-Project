@@ -5,7 +5,13 @@ using UnityEngine.UI;
 
 public class CharacterControls : MonoBehaviour
 {
+    public enum RotationAxes { MouseXAndY = 0, MouseX = 1, MouseY = 2 };
+
+    public RotationAxes axes = RotationAxes.MouseXAndY;
+
     private Rigidbody rigid;
+
+    private Vector2 xzVelocity;
 
     public Text test;
 
@@ -49,6 +55,12 @@ public class CharacterControls : MonoBehaviour
         {
             onGround = true;
             canJump = true;
+
+            if (isCrouched && xzVelocity.magnitude <= 10)
+            {
+                Debug.Log("CROUCHED, LANDED, AND MAG <= 10, speed = crouchSpeed");
+                speed = crouchSpeed;
+            }
         }
     }
 
@@ -105,6 +117,7 @@ public class CharacterControls : MonoBehaviour
 
     void Sprint()
     {
+        Debug.Log("IN SPRINT(), isSlide = FALSE");
         // Cancels Slide
         isCrouched = false;
         isSliding = false;
@@ -117,9 +130,11 @@ public class CharacterControls : MonoBehaviour
     {
         Debug.Log("Entered Slide Function");
         
-        Debug.Log("Sliding on the Ground");
+        Debug.Log("IN SLIDE(), isSlide = TRUE");
         isSliding = true;
-        rigid.AddForce(rigid.velocity * slideMultiplier);
+        xzVelocity *= slideMultiplier;
+
+        rigid.AddForce(new Vector3(xzVelocity.x, 0, xzVelocity.y));
     }
 
     void FixedUpdate()
@@ -137,7 +152,7 @@ public class CharacterControls : MonoBehaviour
             "\nMagnitude: " + rigid.velocity.magnitude +
             "\nXZMagnitude: " + xzVelocity.magnitude;
 
-        // Turning the Camera and player left or right
+        // Turning the Player left or right
         if (axes == RotationAxes.MouseXAndY)
         {
             //Debug.Log (Input.GetJoystickNames ().Length);
@@ -206,18 +221,21 @@ public class CharacterControls : MonoBehaviour
             {
                 isCrouched = true;
             }
+            else if (isCrouched && !onGround)
+            {
+                isCrouched = false;
+            }
             else
             {
+                Debug.Log("SLIDE BUTTON PRESSED ELSE, speed = crouchSpeed");
                 isCrouched = true;
                 speed = crouchSpeed;
             }
         }
 
         // Slide
-        if (onGround && xzVelocity.magnitude > 10 && isCrouched)
+        if (onGround && (xzVelocity.magnitude > 10 && isCrouched))
         {
-            isCrouched = true;
-            speed = crouchSpeed;
             Slide();
         }
 
@@ -225,8 +243,17 @@ public class CharacterControls : MonoBehaviour
         {
             if (rigid.velocity.magnitude < 5)
             {
+                Debug.Log("MAGNITUDE < 5, isSlide = FALSE");
+                Debug.Log("SLIDING & MAG < 5, speed = crouchSpeed");
                 isSliding = false;
+                speed = crouchSpeed;
             }
+        }
+        
+        if (!onGround)
+        {
+            Debug.Log("NOT ON GROUND, isSlide = FALSE");
+            isSliding = false;
         }
 
         // We apply gravity manually for more tuning control

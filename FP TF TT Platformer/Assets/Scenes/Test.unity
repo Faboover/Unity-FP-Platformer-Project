@@ -1380,13 +1380,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5774edc3bef124944aa181c1fe9345ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  axes: 0
   test: {fileID: 375815188}
   velocity: {x: 0, y: 0, z: 0}
   moveSpeed: 10
   sprintSpeed: 15
   crouchSpeed: 5
   speed: 10
-  slideMultiplier: 2
+  slideMultiplier: 2.5
   gravity: 9.8
   maxVelocityChange: 10
   canJump: 1
@@ -1396,6 +1397,7 @@ MonoBehaviour:
   isSliding: 0
   jumpHeight: 2
   sensitivityX: 5
+  joySensitivityX: 25
 --- !u!143 &1846422104
 CharacterController:
   m_ObjectHideFlags: 0
