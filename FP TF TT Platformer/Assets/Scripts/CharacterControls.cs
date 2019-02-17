@@ -13,6 +13,8 @@ public class CharacterControls : MonoBehaviour
 
     private Vector2 xzVelocity;
 
+    private CharacterController controller;
+
     public Text test;
 
     public Vector3 velocity;
@@ -47,6 +49,8 @@ public class CharacterControls : MonoBehaviour
         rigid = GetComponent<Rigidbody>();
         rigid.freezeRotation = true;
         rigid.useGravity = false;
+
+        controller = GetComponent<CharacterController>();
     }
 
     void OnCollisionEnter(Collision obj)
@@ -55,6 +59,12 @@ public class CharacterControls : MonoBehaviour
         {
             onGround = true;
             canJump = true;
+
+            // Stops Rigidbody from being zeroed out for On Collision Enter
+            // Now able to Slide after landing on the ground
+            rigid.velocity = -obj.relativeVelocity;
+            xzVelocity = new Vector2(rigid.velocity.x, rigid.velocity.z);
+            
 
             if (isCrouched && xzVelocity.magnitude <= 10)
             {
@@ -79,6 +89,11 @@ public class CharacterControls : MonoBehaviour
         {
             onGround = false;
         }
+    }
+
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        Debug.Log("Point hit - " + hit.point + "\nHit Normal - " + hit.normal);
     }
 
     float CalculateJumpVerticalSpeed()
@@ -117,7 +132,6 @@ public class CharacterControls : MonoBehaviour
 
     void Sprint()
     {
-        Debug.Log("IN SPRINT(), isSlide = FALSE");
         // Cancels Slide
         isCrouched = false;
         isSliding = false;
@@ -128,9 +142,6 @@ public class CharacterControls : MonoBehaviour
 
     void Slide()
     {
-        Debug.Log("Entered Slide Function");
-        
-        Debug.Log("IN SLIDE(), isSlide = TRUE");
         isSliding = true;
         xzVelocity *= slideMultiplier;
 
@@ -144,7 +155,9 @@ public class CharacterControls : MonoBehaviour
 
     void Update()
     {
-        Vector2 xzVelocity = new Vector2(rigid.velocity.x, rigid.velocity.z);
+        //Debug.Log("CharController isGrounded = " + controller.isGrounded);
+
+        xzVelocity = new Vector2(rigid.velocity.x, rigid.velocity.z);
 
         test.text = "Target Velocity: " + targetVelocity +
             "\nVelocity Change: " + velocityChange +
@@ -212,6 +225,8 @@ public class CharacterControls : MonoBehaviour
         // Crouch
         if (Input.GetButtonDown("Slide"))
         {
+            
+
             if (isCrouched)
             {
                 isCrouched = false;
@@ -228,14 +243,23 @@ public class CharacterControls : MonoBehaviour
             else
             {
                 Debug.Log("SLIDE BUTTON PRESSED ELSE, speed = crouchSpeed");
+                if (isSprinting && onGround)
+                {
+                    isSprinting = false;
+                }
                 isCrouched = true;
                 speed = crouchSpeed;
             }
         }
 
         // Slide
-        if (onGround && (xzVelocity.magnitude > 10 && isCrouched))
+        if (onGround && (xzVelocity.magnitude > 10 && isCrouched) && !isSliding)
         {
+            if (isSprinting)
+            {
+                isSprinting = false;
+            }
+
             Slide();
         }
 
@@ -243,8 +267,6 @@ public class CharacterControls : MonoBehaviour
         {
             if (rigid.velocity.magnitude < 5)
             {
-                Debug.Log("MAGNITUDE < 5, isSlide = FALSE");
-                Debug.Log("SLIDING & MAG < 5, speed = crouchSpeed");
                 isSliding = false;
                 speed = crouchSpeed;
             }
@@ -252,7 +274,6 @@ public class CharacterControls : MonoBehaviour
         
         if (!onGround)
         {
-            Debug.Log("NOT ON GROUND, isSlide = FALSE");
             isSliding = false;
         }
 
