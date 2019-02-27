@@ -60,21 +60,28 @@ public class CharacterControls : MonoBehaviour
 
     void OnCollisionEnter(Collision obj)
     {
+        Debug.Log("Rigid Velocity before set to -relative: " + rigid.velocity + 
+            "\nXZMagnitude: " + xzVelocity.magnitude);
+
         // Stops Rigidbody from being zeroed out for On Collision Enter
         // Now able to Slide after landing on the ground
         rigid.velocity = -obj.relativeVelocity;
 
+        Debug.Log("Rigid Velocity after set to -relative: " + rigid.velocity +
+            "\nXZMagnitude: " + xzVelocity.magnitude);
+
         // Goes through all contacts with rigidbody
         foreach (ContactPoint contact in obj.contacts)
         {
-            Debug.Log("CollisionEnter Detected: Contact Point " + contact.point + " Contact Normal " + contact.normal);
-
-            if (contact.normal.y > 0)
+            if (contact.normal.y == 1)
             {
                 onGround = true;
                 canJump = true;
 
                 xzVelocity = new Vector2(rigid.velocity.x, rigid.velocity.z);
+
+                Debug.Log("XZVelocity after set to rigid vel: " + xzVelocity +
+                    "\nXAMagnitude: " + xzVelocity.magnitude);
 
                 if (isCrouched && xzVelocity.magnitude <= 10)
                 {
@@ -82,17 +89,17 @@ public class CharacterControls : MonoBehaviour
                     speed = crouchSpeed;
                 }
             }
-            else if ((contact.normal.x != 0 || contact.normal.z != 0) && contact.normal.y == 0)
+
+            if (contact.normal.x != 0 || contact.normal.z != 0)
             {
-                Debug.Log("CollisionEnter Detected Wall: Contact Normal " + contact.normal);
-                if (!onGround)
+                if (!onGround && contact.normal.y < 0.1)
                 {
                     onWall = true;
+
+                    canJump = true;
+
+                    wallNormal = new Vector2(contact.normal.x, contact.normal.z);
                 }
-
-                canJump = true;
-
-                wallNormal = new Vector2(contact.normal.x, contact.normal.z);
             }
         }
 
@@ -118,43 +125,38 @@ public class CharacterControls : MonoBehaviour
         // Goes through all contacts with rigidbody
         foreach (ContactPoint contact in obj.contacts)
         {
-            Debug.Log("CollisionEnter Detected: Contact Point " + contact.point + " Contact Normal " + contact.normal);
-
-            if (contact.normal.y > 0)
+            if (contact.normal.y == 1)
             {
                 onGround = true;
                 canJump = true;
-
-                xzVelocity = new Vector2(rigid.velocity.x, rigid.velocity.z);
-
-                if (isCrouched && xzVelocity.magnitude <= 10)
-                {
-                    Debug.Log("Collision: CROUCHED, LANDED, AND MAG <= 10, speed = crouchSpeed");
-                    speed = crouchSpeed;
-                }
             }
-            else if ((contact.normal.x != 0 || contact.normal.z != 0) && contact.normal.y == 0)
+
+            if (contact.normal.x != 0 || contact.normal.z != 0)
             {
-                Debug.Log("CollisionEnter Detected Wall: Contact Normal " + contact.normal);
-                if (!onGround)
+                if (!onGround && contact.normal.y < 0.1)
                 {
                     onWall = true;
+
+                    canJump = true;
+
+                    wallNormal = new Vector2(contact.normal.x, contact.normal.z);
                 }
-
-                canJump = true;
-
-                wallNormal = new Vector2(contact.normal.x, contact.normal.z);
             }
         }
     }
 
     void OnCollisionExit(Collision obj)
     {
-        Debug.Log("CollisionExit Detected: Contacts are - " + obj.contacts);
+        //Debug.Log("CollisionExit Detected: Contacts are - " + obj.contacts);
+        if (onGround)
+        {
+            onGround = false;
+        }
 
-        onGround = false;
-
-        onWall = false;
+        if (onWall)
+        {
+            onWall = false;
+        }
     }
 
         private void OnControllerColliderHit(ControllerColliderHit hit)
@@ -186,13 +188,13 @@ public class CharacterControls : MonoBehaviour
         {
             if (onGround)
             {
-                rigid.velocity = new Vector3(velocity.x, CalculateJumpVerticalSpeed(), velocity.z);
+                rigid.velocity = new Vector3(rigid.velocity.x, CalculateJumpVerticalSpeed(), rigid.velocity.z);
             }
             else if (!onGround && canJump)
             {
                 Debug.Log("Air Jump:");
                 canJump = false;
-                rigid.velocity = new Vector3(velocity.x, CalculateJumpVerticalSpeed(), velocity.z);
+                rigid.velocity = new Vector3(rigid.velocity.x, CalculateJumpVerticalSpeed(), rigid.velocity.z);
             }
         }
         else
@@ -218,9 +220,14 @@ public class CharacterControls : MonoBehaviour
     void Slide()
     {
         isSliding = true;
-        xzVelocity *= slideMultiplier;
+        Vector2 slideVelocity = xzVelocity * slideMultiplier;
 
-        rigid.AddForce(new Vector3(xzVelocity.x, 0, xzVelocity.y));
+        Debug.Log("Slide Force Not Added, RigidVel: " + rigid.velocity + "\tRigidMag: " + rigid.velocity.magnitude);
+
+        rigid.AddForce(new Vector3(slideVelocity.x, 0, slideVelocity.y));
+
+        Debug.Log("Slide Force Added, RigidVel: " + rigid.velocity + "\tRigidMag: " + rigid.velocity.magnitude +
+            "\n XZVel: " + xzVelocity + "\tXZMag: " + xzVelocity.magnitude);
     }
 
     void Move()
@@ -257,11 +264,7 @@ public class CharacterControls : MonoBehaviour
 
         rigid.AddForce(velocityChange * 10);
     }
-
-    void FixedUpdate()
-    {
-        
-    }
+    
 
     void Update()
     {
@@ -295,7 +298,7 @@ public class CharacterControls : MonoBehaviour
             }
         }
 
-        if (Input.GetButton("Horizontal") || Input.GetButton("Vertical"))
+        if (Input.GetButton("Horizontal") || Input.GetButton("Vertical") || Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
         {
             isMoving = true;
         }
@@ -369,6 +372,11 @@ public class CharacterControls : MonoBehaviour
             }
         }
 
+        if (isCrouched && onGround)
+        {
+            Debug.Log("IsCrouched: " + isCrouched + "OnGround: " + onGround + "IsSliding: " + isSliding +
+                "\nXZVel: " + xzVelocity + "\tXZMag: " + xzVelocity.magnitude);
+        }
         // Slide
         if (onGround && (xzVelocity.magnitude > 10 && isCrouched) && !isSliding)
         {
@@ -377,6 +385,7 @@ public class CharacterControls : MonoBehaviour
                 isSprinting = false;
             }
 
+            Debug.Log("Calling Slide()");
             Slide();
         }
 
