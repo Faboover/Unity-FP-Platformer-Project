@@ -1552,7 +1552,7 @@ MonoBehaviour:
   sprintSpeed: 15
   crouchSpeed: 5
   speed: 10
-  slideMultiplier: 2.5
+  slideMultiplier: 5
   gravity: 9.8
   maxVelocityChange: 10
   canJump: 1
