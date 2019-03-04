@@ -14,8 +14,6 @@ public class CharacterControls : MonoBehaviour
     private Vector2 xzVelocity;
     private Vector2 wallNormal;
 
-    private CharacterController controller;
-
     public Text test;
 
     public Vector3 velocity;
@@ -54,8 +52,6 @@ public class CharacterControls : MonoBehaviour
         rigid = GetComponent<Rigidbody>();
         rigid.freezeRotation = true;
         rigid.useGravity = false;
-
-        controller = GetComponent<CharacterController>();
     }
 
     void OnCollisionEnter(Collision obj)
@@ -305,6 +301,15 @@ public class CharacterControls : MonoBehaviour
         else
         {
             isMoving = false;
+        }
+
+        if (onWall)
+        {
+            gravity = 1.5f;
+        }
+        else
+        {
+            gravity = 10.0f;
         }
 
 
