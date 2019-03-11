@@ -156,6 +156,11 @@ Prefab:
       propertyPath: m_Name
       value: Plat 1 Wall (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 65411509944347200, guid: e51deaa90054d3e47a8fc1abf42e6fb4,
+        type: 2}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e51deaa90054d3e47a8fc1abf42e6fb4, type: 2}
   m_IsPrefabParent: 0
@@ -1659,17 +1664,20 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1846422095}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c5fd4b249c91dd54eacad070bcb8659c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   playerModel: {fileID: 0}
+  test: {fileID: 375815188}
   cam: {fileID: 0}
   crouchPos: {x: 0, y: 0, z: 0}
   normalPos: {x: 0, y: 0, z: 0}
   smoothing: 0
+  wallcamRot: 0
   transformed: 0
+  wallChange: 0
 --- !u!114 &1846422103
 MonoBehaviour:
   m_ObjectHideFlags: 0

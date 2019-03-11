@@ -197,7 +197,7 @@ public class CharacterControls : MonoBehaviour
         {
             Debug.Log("Wall Jump:");
 
-            rigid.velocity = new Vector3(wallNormal.x * speed, CalculateJumpVerticalSpeed(), wallNormal.y * speed);
+            rigid.velocity = new Vector3(rigid.velocity.x + wallNormal.x * speed, CalculateJumpVerticalSpeed(), rigid.velocity.z + wallNormal.y * speed);
         }
 
         //rigid.AddForce(0, CalculateJumpVerticalSpeed(), 0);
@@ -268,14 +268,14 @@ public class CharacterControls : MonoBehaviour
 
         xzVelocity = new Vector2(rigid.velocity.x, rigid.velocity.z);
 
-        test.text = "Target Velocity: " + targetVelocity +
+        /*test.text = "Target Velocity: " + targetVelocity +
             "\nVelocity Change: " + velocityChange +
             "\nCrrnt Velocity: " + rigid.velocity +
             "\nMagnitude: " + rigid.velocity.magnitude +
             "\nXZMagnitude: " + xzVelocity.magnitude +
             "\nHorizontal: " + Input.GetAxis("Horizontal") + 
             "\nVertical: " + Input.GetAxis("Vertical");
-
+            */
         // Turning the Player left or right
         if (axes == RotationAxes.MouseXAndY)
         {
@@ -306,6 +306,9 @@ public class CharacterControls : MonoBehaviour
         if (onWall)
         {
             gravity = 1.5f;
+
+            // PUsh Player towards wall they are colliding with for wall run
+            rigid.AddForce(-wallNormal.x * 5, 0, -wallNormal.y * 5);
         }
         else
         {
