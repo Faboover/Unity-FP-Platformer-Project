@@ -76,12 +76,12 @@ public class CharacterControls : MonoBehaviour
 
                 xzVelocity = new Vector2(rigid.velocity.x, rigid.velocity.z);
 
-                Debug.Log("XZVelocity after set to rigid vel: " + xzVelocity +
-                    "\nXAMagnitude: " + xzVelocity.magnitude);
+               // Debug.Log("XZVelocity after set to rigid vel: " + xzVelocity +
+                    //"\nXAMagnitude: " + xzVelocity.magnitude);
 
                 if (isCrouched && xzVelocity.magnitude <= 10)
                 {
-                    Debug.Log("Collision: CROUCHED, LANDED, AND MAG <= 10, speed = crouchSpeed");
+                    //Debug.Log("Collision: CROUCHED, LANDED, AND MAG <= 10, speed = crouchSpeed");
                     speed = crouchSpeed;
                 }
             }
@@ -188,14 +188,14 @@ public class CharacterControls : MonoBehaviour
             }
             else if (!onGround && canJump)
             {
-                Debug.Log("Air Jump:");
+                //Debug.Log("Air Jump:");
                 canJump = false;
                 rigid.velocity = new Vector3(rigid.velocity.x, CalculateJumpVerticalSpeed(), rigid.velocity.z);
             }
         }
         else
         {
-            Debug.Log("Wall Jump:");
+            //Debug.Log("Wall Jump:");
 
             rigid.velocity = new Vector3(rigid.velocity.x + wallNormal.x * speed, CalculateJumpVerticalSpeed(), rigid.velocity.z + wallNormal.y * speed);
         }
@@ -218,12 +218,12 @@ public class CharacterControls : MonoBehaviour
         isSliding = true;
         Vector2 slideVelocity = xzVelocity * slideMultiplier;
 
-        Debug.Log("Slide Force Not Added, RigidVel: " + rigid.velocity + "\tRigidMag: " + rigid.velocity.magnitude);
+        //Debug.Log("Slide Force Not Added, RigidVel: " + rigid.velocity + "\tRigidMag: " + rigid.velocity.magnitude);
 
         rigid.AddForce(new Vector3(slideVelocity.x, 0, slideVelocity.y));
 
-        Debug.Log("Slide Force Added, RigidVel: " + rigid.velocity + "\tRigidMag: " + rigid.velocity.magnitude +
-            "\n XZVel: " + xzVelocity + "\tXZMag: " + xzVelocity.magnitude);
+        //Debug.Log("Slide Force Added, RigidVel: " + rigid.velocity + "\tRigidMag: " + rigid.velocity.magnitude +
+            //"\n XZVel: " + xzVelocity + "\tXZMag: " + xzVelocity.magnitude);
     }
 
     void Move()
@@ -370,7 +370,7 @@ public class CharacterControls : MonoBehaviour
             }
             else
             {
-                Debug.Log("SLIDE BUTTON PRESSED ELSE, speed = crouchSpeed");
+                //Debug.Log("SLIDE BUTTON PRESSED ELSE, speed = crouchSpeed");
                 if (isSprinting && onGround)
                 {
                     isSprinting = false;
@@ -382,8 +382,8 @@ public class CharacterControls : MonoBehaviour
 
         if (isCrouched && onGround)
         {
-            Debug.Log("IsCrouched: " + isCrouched + "OnGround: " + onGround + "IsSliding: " + isSliding +
-                "\nXZVel: " + xzVelocity + "\tXZMag: " + xzVelocity.magnitude);
+            //Debug.Log("IsCrouched: " + isCrouched + "OnGround: " + onGround + "IsSliding: " + isSliding +
+                //"\nXZVel: " + xzVelocity + "\tXZMag: " + xzVelocity.magnitude);
         }
         // Slide
         if (onGround && (xzVelocity.magnitude > 10 && isCrouched) && !isSliding)
@@ -393,7 +393,7 @@ public class CharacterControls : MonoBehaviour
                 isSprinting = false;
             }
 
-            Debug.Log("Calling Slide()");
+            //Debug.Log("Calling Slide()");
             Slide();
         }
 

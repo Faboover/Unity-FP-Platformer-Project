@@ -34,7 +34,7 @@ public class PlayerModel : MonoBehaviour {
 
         smoothing = 5f;
 
-        wallcamRot = 5f;
+        wallcamRot = 10f;
 
         transformed = false;
         wallChange = false;
@@ -67,20 +67,22 @@ public class PlayerModel : MonoBehaviour {
     {
         if (controller.onWall)
         {
+            float radRight = Mathf.Deg2Rad * (playerModel.transform.localEulerAngles.y);
 
-            float xRayDir = Mathf.Cos(playerModel.transform.localEulerAngles.y);
-            float zRayDir = Mathf.Sin(playerModel.transform.localEulerAngles.y);
+
+            float xRayDir = Mathf.Cos(-radRight);
+            float zRayDir = Mathf.Sin(-radRight);
 
             Vector3 rayDir = new Vector3(xRayDir, 0, zRayDir);
 
-            Debug.Log("Player Rotation: " + playerModel.transform.localEulerAngles.y +
-                "\nXRayDir: " + xRayDir + "ZRayDir: " + zRayDir);
+            //Debug.Log("Player Rotation: " + playerModel.transform.localEulerAngles.y +
+                //"\nXRayDir: " + xRayDir + "ZRayDir: " + zRayDir);
 
             bool rayRight = Physics.Raycast(playerModel.transform.position, rayDir, 0.6f);
             bool rayLeft = Physics.Raycast(playerModel.transform.position, -rayDir, 0.6f);
 
             test.text = "Player Rotation: " + playerModel.transform.localEulerAngles.y +
-                "\nForward Dir: " + playerModel.transform.forward + 
+                "\nCamZRot: " + cam.transform.localEulerAngles.z +
                 "\nXRayDir: " + xRayDir + "\nZRayDir: " + zRayDir +
                 "\nLeft Ray: " + rayDir +
                 "\nRight Ray: " + -rayDir + 
@@ -93,21 +95,68 @@ public class PlayerModel : MonoBehaviour {
             }
             else if(rayLeft)
             {
-                cam.transform.localEulerAngles = new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 330);
-                //cam.transform.localEulerAngles = Vector3.Lerp(cam.transform.localEulerAngles, new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 360 - (wallcamRot * 2)), smoothing * Time.deltaTime);
+                if (cam.transform.localEulerAngles.z > 359)
+                {
+                    cam.transform.localEulerAngles = new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 359);
+                }
+                else if(cam.transform.localEulerAngles.z < 1)
+                {
+                    cam.transform.localEulerAngles = new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 359);
+                }
+
+                cam.transform.localEulerAngles = Vector3.Lerp(cam.transform.localEulerAngles, new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 360 - (wallcamRot)), smoothing * Time.deltaTime);
             }
             else
             {
-                Debug.Log("You are on a Wall, but sys can't detect what side it is on");
+                if (cam.transform.localEulerAngles.z != 0)
+                {
+                    if (cam.transform.localEulerAngles.z >= 355)
+                    {
+                        Debug.Log("On Wall, Angle >= 355: Hard coding z angle to 0");
+                        cam.transform.localEulerAngles = new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 0);
+                    }
+                    else if (cam.transform.localEulerAngles.z < 355 && cam.transform.localEulerAngles.z >= 340)
+                    {
+                        Debug.Log("On Wall, CamZ is between 359 and 340");
+                        cam.transform.localEulerAngles = Vector3.Lerp(cam.transform.localEulerAngles, new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 359), (smoothing * 9) * Time.deltaTime);
+                    }
+                    else if (cam.transform.localEulerAngles.z <= 5)
+                    {
+                        Debug.Log("On Wall, Angle <= 5: Hard coding z angle to 0");
+                        cam.transform.localEulerAngles = new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 0);
+                    }
+                    else if (cam.transform.localEulerAngles.z > 5) //&& cam.transform.localEulerAngles.z <= 0)
+                    {
+                        Debug.Log("On Wall, CamZ is > 5");
+                        cam.transform.localEulerAngles = Vector3.Lerp(cam.transform.localEulerAngles, new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 4), (smoothing * 9) * Time.deltaTime);
+                    }
+                    else
+                    {
+                        cam.transform.localEulerAngles = Vector3.Lerp(cam.transform.localEulerAngles, new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 0), (smoothing * 9) * Time.deltaTime);
+                    }
+                }
             }
         }
         else
         {
-            if (cam.transform.localEulerAngles.z <= wallcamRot + 0.1f || cam.transform.localEulerAngles.z >= wallcamRot - 0.1f)
+            if (cam.transform.localEulerAngles.z != 0)
             {
-                cam.transform.localEulerAngles = Vector3.Lerp(cam.transform.localEulerAngles, new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 0), smoothing * Time.deltaTime); ;
+                if (cam.transform.localEulerAngles.z >= 359 - 0.5)    
+                {
+                    Debug.Log("Off Wall, Angle >= 359 - 0.5: Hard coding z angle to 0");
+                    cam.transform.localEulerAngles = new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 0);
+                }
+                else if (cam.transform.localEulerAngles.z < 359 && cam.transform.localEulerAngles.z >= 340)
+                {
+                    Debug.Log("Off Wall, CamZ is between 359 and 340");
+                    cam.transform.localEulerAngles = Vector3.Lerp(cam.transform.localEulerAngles, new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 359), smoothing * Time.deltaTime);
+                }
+                else
+                {
+                    Debug.Log("Off Wall, Normal Lerp to rotation of 0");
+                    cam.transform.localEulerAngles = Vector3.Lerp(cam.transform.localEulerAngles, new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 0), smoothing * Time.deltaTime);
+                }
             }
-
         }
     }
 	
