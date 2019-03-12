@@ -112,22 +112,22 @@ public class PlayerModel : MonoBehaviour {
                 {
                     if (cam.transform.localEulerAngles.z >= 355)
                     {
-                        Debug.Log("On Wall, Angle >= 355: Hard coding z angle to 0");
+                        //Debug.Log("On Wall, Angle >= 355: Hard coding z angle to 0");
                         cam.transform.localEulerAngles = new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 0);
                     }
                     else if (cam.transform.localEulerAngles.z < 355 && cam.transform.localEulerAngles.z >= 340)
                     {
-                        Debug.Log("On Wall, CamZ is between 359 and 340");
+                        //Debug.Log("On Wall, CamZ is between 359 and 340");
                         cam.transform.localEulerAngles = Vector3.Lerp(cam.transform.localEulerAngles, new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 359), (smoothing * 9) * Time.deltaTime);
                     }
                     else if (cam.transform.localEulerAngles.z <= 5)
                     {
-                        Debug.Log("On Wall, Angle <= 5: Hard coding z angle to 0");
+                        //Debug.Log("On Wall, Angle <= 5: Hard coding z angle to 0");
                         cam.transform.localEulerAngles = new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 0);
                     }
                     else if (cam.transform.localEulerAngles.z > 5) //&& cam.transform.localEulerAngles.z <= 0)
                     {
-                        Debug.Log("On Wall, CamZ is > 5");
+                        //Debug.Log("On Wall, CamZ is > 5");
                         cam.transform.localEulerAngles = Vector3.Lerp(cam.transform.localEulerAngles, new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 4), (smoothing * 9) * Time.deltaTime);
                     }
                     else
@@ -143,17 +143,17 @@ public class PlayerModel : MonoBehaviour {
             {
                 if (cam.transform.localEulerAngles.z >= 359 - 0.5)    
                 {
-                    Debug.Log("Off Wall, Angle >= 359 - 0.5: Hard coding z angle to 0");
+                    //Debug.Log("Off Wall, Angle >= 359 - 0.5: Hard coding z angle to 0");
                     cam.transform.localEulerAngles = new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 0);
                 }
                 else if (cam.transform.localEulerAngles.z < 359 && cam.transform.localEulerAngles.z >= 340)
                 {
-                    Debug.Log("Off Wall, CamZ is between 359 and 340");
+                    //Debug.Log("Off Wall, CamZ is between 359 and 340");
                     cam.transform.localEulerAngles = Vector3.Lerp(cam.transform.localEulerAngles, new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 359), smoothing * Time.deltaTime);
                 }
                 else
                 {
-                    Debug.Log("Off Wall, Normal Lerp to rotation of 0");
+                    //Debug.Log("Off Wall, Normal Lerp to rotation of 0");
                     cam.transform.localEulerAngles = Vector3.Lerp(cam.transform.localEulerAngles, new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 0), smoothing * Time.deltaTime);
                 }
             }

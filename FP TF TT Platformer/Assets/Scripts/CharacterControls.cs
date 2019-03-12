@@ -19,6 +19,8 @@ public class CharacterControls : MonoBehaviour
     public Vector3 velocity;
     private Vector3 velocityChange;
     private Vector3 targetVelocity;
+    private Vector3 walldirection;
+
 
     public float moveSpeed;
     public float sprintSpeed;
@@ -56,15 +58,15 @@ public class CharacterControls : MonoBehaviour
 
     void OnCollisionEnter(Collision obj)
     {
-        Debug.Log("Rigid Velocity before set to -relative: " + rigid.velocity + 
-            "\nXZMagnitude: " + xzVelocity.magnitude);
+        //Debug.Log("Rigid Velocity before set to -relative: " + rigid.velocity + 
+            //"\nXZMagnitude: " + xzVelocity.magnitude);
 
         // Stops Rigidbody from being zeroed out for On Collision Enter
         // Now able to Slide after landing on the ground
         rigid.velocity = -obj.relativeVelocity;
 
-        Debug.Log("Rigid Velocity after set to -relative: " + rigid.velocity +
-            "\nXZMagnitude: " + xzVelocity.magnitude);
+        //Debug.Log("Rigid Velocity after set to -relative: " + rigid.velocity +
+            //"\nXZMagnitude: " + xzVelocity.magnitude);
 
         // Goes through all contacts with rigidbody
         foreach (ContactPoint contact in obj.contacts)
@@ -138,6 +140,18 @@ public class CharacterControls : MonoBehaviour
                     wallNormal = new Vector2(contact.normal.x, contact.normal.z);
                 }
             }
+            
+
+            if (onWall)
+            {
+                /*
+                Debug.Log("Contact Point: " + contact.point + "\nVector3.Up: " + Vector3.up);
+                Debug.Log("Contact.Normal dot UP = " + (Vector3.Dot(contact.normal, Vector3.up)));
+                Debug.Log("Contact.Normal cross UP = " + (Vector3.Cross(contact.normal, Vector3.up)));
+                */
+
+                walldirection = Vector3.Cross(contact.normal, Vector3.up);
+            }
         }
     }
 
@@ -153,11 +167,6 @@ public class CharacterControls : MonoBehaviour
         {
             onWall = false;
         }
-    }
-
-        private void OnControllerColliderHit(ControllerColliderHit hit)
-    {
-        Debug.Log("Point hit - " + hit.point + "\nHit Normal - " + hit.normal);
     }
 
     float CalculateJumpVerticalSpeed()
@@ -261,11 +270,32 @@ public class CharacterControls : MonoBehaviour
         rigid.AddForce(velocityChange * 10);
     }
     
+    void WallMove()
+    {
+        if (Vector3.Angle(walldirection, transform.forward) > 135 && Vector3.Angle(walldirection, transform.forward) <= 180)
+        {
+            walldirection *= -1;
+        }
+
+        // Calculate how fast we should be moving in the direction of the wall
+        targetVelocity = Vector3.Scale(walldirection, new Vector3(Input.GetAxis("Vertical"), 1, Input.GetAxis("Vertical")));
+        //targetVelocity = transform.TransformDirection(targetVelocity);
+        targetVelocity *= speed;
+
+        Debug.Log("Angle between walldirection and Player forwad: " + Vector3.Angle(walldirection, transform.forward));
+
+        // Apply a force that attempts to reach our target velocity
+        velocity = rigid.velocity;
+        velocityChange = (targetVelocity - velocity);
+        velocityChange.x = Mathf.Clamp(velocityChange.x, -maxVelocityChange, maxVelocityChange);
+        velocityChange.z = Mathf.Clamp(velocityChange.z, -maxVelocityChange, maxVelocityChange);
+        velocityChange.y = 0;
+
+        rigid.AddForce(velocityChange, ForceMode.VelocityChange);
+    }
 
     void Update()
     {
-        //Debug.Log("CharController isGrounded = " + controller.isGrounded);
-
         xzVelocity = new Vector2(rigid.velocity.x, rigid.velocity.z);
 
         /*test.text = "Target Velocity: " + targetVelocity +
@@ -307,8 +337,8 @@ public class CharacterControls : MonoBehaviour
         {
             gravity = 1.5f;
 
-            // PUsh Player towards wall they are colliding with for wall run
-            rigid.AddForce(-wallNormal.x * 5, 0, -wallNormal.y * 5);
+            // Push Player towards wall they are colliding with for wall run
+            //rigid.AddForce(-wallNormal.x * 5, 0, -wallNormal.y * 5);
         }
         else
         {
@@ -322,6 +352,10 @@ public class CharacterControls : MonoBehaviour
             {
                 Move();
             }
+        }
+        else if (!onGround && onWall)
+        {
+            WallMove();
         }
         else if(!onGround && isMoving)
         {
