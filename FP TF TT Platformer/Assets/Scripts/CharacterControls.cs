@@ -19,8 +19,7 @@ public class CharacterControls : MonoBehaviour
     public Vector3 velocity;
     private Vector3 velocityChange;
     private Vector3 targetVelocity;
-    private Vector3 walldirection;
-
+    private Vector3 wallDir;
 
     public float moveSpeed;
     public float sprintSpeed;
@@ -97,6 +96,8 @@ public class CharacterControls : MonoBehaviour
                     canJump = true;
 
                     wallNormal = new Vector2(contact.normal.x, contact.normal.z);
+
+                    wallDir = Vector3.Cross(contact.normal, Vector3.up);
                 }
             }
         }
@@ -138,19 +139,14 @@ public class CharacterControls : MonoBehaviour
                     canJump = true;
 
                     wallNormal = new Vector2(contact.normal.x, contact.normal.z);
+
+                    wallDir = Vector3.Cross(contact.normal, Vector3.up);
                 }
             }
             
-
-            if (onWall)
+            if (onGround)
             {
-                /*
-                Debug.Log("Contact Point: " + contact.point + "\nVector3.Up: " + Vector3.up);
-                Debug.Log("Contact.Normal dot UP = " + (Vector3.Dot(contact.normal, Vector3.up)));
-                Debug.Log("Contact.Normal cross UP = " + (Vector3.Cross(contact.normal, Vector3.up)));
-                */
-
-                walldirection = Vector3.Cross(contact.normal, Vector3.up);
+                onWall = false;
             }
         }
     }
@@ -193,20 +189,21 @@ public class CharacterControls : MonoBehaviour
         {
             if (onGround)
             {
+                Debug.Log("On Ground Jump");
                 rigid.velocity = new Vector3(rigid.velocity.x, CalculateJumpVerticalSpeed(), rigid.velocity.z);
             }
             else if (!onGround && canJump)
             {
-                //Debug.Log("Air Jump:");
+                Debug.Log("In Air Jump:");
                 canJump = false;
                 rigid.velocity = new Vector3(rigid.velocity.x, CalculateJumpVerticalSpeed(), rigid.velocity.z);
             }
         }
         else
         {
-            //Debug.Log("Wall Jump:");
+            Debug.Log("On Wall Jump");
 
-            rigid.velocity = new Vector3(rigid.velocity.x + wallNormal.x * speed, CalculateJumpVerticalSpeed(), rigid.velocity.z + wallNormal.y * speed);
+            rigid.velocity = new Vector3(rigid.velocity.x + (wallNormal.x * speed), CalculateJumpVerticalSpeed(), rigid.velocity.z + (wallNormal.y * speed));
         }
 
         //rigid.AddForce(0, CalculateJumpVerticalSpeed(), 0);
@@ -272,17 +269,30 @@ public class CharacterControls : MonoBehaviour
     
     void WallMove()
     {
-        if (Vector3.Angle(walldirection, transform.forward) > 135 && Vector3.Angle(walldirection, transform.forward) <= 180)
+        if (Vector3.Angle(wallDir, transform.forward) >= 100 && Vector3.Angle(wallDir, transform.forward) <= 180)
         {
-            walldirection *= -1;
+            wallDir *= -1;
+        }
+
+        if (Vector3.Angle(wallDir, transform.forward) >= 80 && Vector3.Angle(wallDir, transform.forward) < 100)
+        {
+            // To allow movement away from the wall in the above range
+            // NOT FINAL IMPLEMENTATION, needs to be done based on the angle the player is trying to move compared to
+            // the wall.
+            if (Input.GetAxis("Vertical") != 0)
+            {
+                AirMove();
+            }
+
+            return;
         }
 
         // Calculate how fast we should be moving in the direction of the wall
-        targetVelocity = Vector3.Scale(walldirection, new Vector3(Input.GetAxis("Vertical"), 1, Input.GetAxis("Vertical")));
+        targetVelocity = Vector3.Scale(wallDir, new Vector3(Input.GetAxis("Vertical"), 1, Input.GetAxis("Vertical")));
         //targetVelocity = transform.TransformDirection(targetVelocity);
         targetVelocity *= speed;
 
-        Debug.Log("Angle between walldirection and Player forwad: " + Vector3.Angle(walldirection, transform.forward));
+        //Debug.Log("Angle between walldirection and Player forwad: " + Vector3.Angle(wallDir, transform.forward));
 
         // Apply a force that attempts to reach our target velocity
         velocity = rigid.velocity;
