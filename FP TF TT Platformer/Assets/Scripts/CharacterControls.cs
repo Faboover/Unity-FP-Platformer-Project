@@ -24,11 +24,14 @@ public class CharacterControls : MonoBehaviour
     public float moveSpeed;
     public float sprintSpeed;
     public float crouchSpeed;
+    public float wallSpeed;
     public float speed = 10.0f;
 
     public float slideMultiplier;
     public float gravity = 10.0f;
     public float maxVelocityChange = 10.0f;
+
+    public float smoothing;
 
     public bool canJump = true;
 
@@ -48,7 +51,7 @@ public class CharacterControls : MonoBehaviour
 
     void Awake()
     {
-        speed = moveSpeed;
+        AdjustSpeed(moveSpeed);
 
         rigid = GetComponent<Rigidbody>();
         rigid.freezeRotation = true;
@@ -83,7 +86,7 @@ public class CharacterControls : MonoBehaviour
                 if (isCrouched && xzVelocity.magnitude <= 10)
                 {
                     //Debug.Log("Collision: CROUCHED, LANDED, AND MAG <= 10, speed = crouchSpeed");
-                    speed = crouchSpeed;
+                    AdjustSpeed(crouchSpeed);
                 }
             }
 
@@ -201,9 +204,23 @@ public class CharacterControls : MonoBehaviour
         }
         else
         {
-            Debug.Log("On Wall Jump");
+            Debug.Log("On Wall Jump, Wall Normal = " + wallNormal + "Current Velocity: " + rigid.velocity + "\nCurrent Speed = " + speed);
 
-            rigid.velocity = new Vector3(rigid.velocity.x + (wallNormal.x * speed), CalculateJumpVerticalSpeed(), rigid.velocity.z + (wallNormal.y * speed));
+            onWall = false;
+            /*
+            if ((wallNormal.x < 0 && rigid.velocity.x > 0) || (wallNormal.x > 0 && rigid.velocity.x < 0))
+            {
+                rigid.velocity = new Vector3 (-rigid.velocity.x, rigid.velocity.y, rigid.velocity.z);
+            }
+
+            if ((wallNormal.y < 0 && rigid.velocity.z > 0) || (wallNormal.y > 0 && rigid.velocity.z < 0))
+            {
+                wallNormal.y *= -1;
+            }
+            */
+            rigid.velocity = new Vector3(rigid.velocity.x + (wallNormal.x * 10), CalculateJumpVerticalSpeed(), rigid.velocity.z + (wallNormal.y * 10));
+
+            Debug.Log("Velocity After Wall Jump: " + rigid.velocity);
         }
 
         //rigid.AddForce(0, CalculateJumpVerticalSpeed(), 0);
@@ -215,7 +232,7 @@ public class CharacterControls : MonoBehaviour
         isCrouched = false;
         isSliding = false;
 
-        speed = sprintSpeed;
+        AdjustSpeed(sprintSpeed);
         isSprinting = true;
     }
 
@@ -269,30 +286,52 @@ public class CharacterControls : MonoBehaviour
     
     void WallMove()
     {
-        if (Vector3.Angle(wallDir, transform.forward) >= 100 && Vector3.Angle(wallDir, transform.forward) <= 180)
+        // Direction player is trying to move towards, to be used for learning the angle between this direction and the wall
+        Vector3 targetAngle = transform.TransformDirection(new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")));
+        
+        // The angle between the vector the player is facing and the angle of the wall
+        float angleFacing = Vector3.Angle(wallDir, transform.forward);
+        float angleDif = Vector3.Angle(wallDir, targetAngle);
+        
+        // Need to check where the player is facing in regards to the wall
+        // The wall value we are using is a vector (a direction), thus when the player moves in relation to the wall
+        // we will need to adjust the wall vector to follow the players input.
+        if (angleFacing >= 90 && angleFacing <= 180)
         {
+            Debug.Log("Flipping Wall Direction from " + wallDir + " to " + -wallDir);
             wallDir *= -1;
         }
-
-        if (Vector3.Angle(wallDir, transform.forward) >= 80 && Vector3.Angle(wallDir, transform.forward) < 100)
-        {
-            // To allow movement away from the wall in the above range
-            // NOT FINAL IMPLEMENTATION, needs to be done based on the angle the player is trying to move compared to
-            // the wall.
-            if (Input.GetAxis("Vertical") != 0)
-            {
-                AirMove();
-            }
+        
+        // To allow movement away from the wall in the given range
+        if (angleDif > 45 && angleDif < 135)
+        {   
+            AirMove();
 
             return;
         }
 
-        // Calculate how fast we should be moving in the direction of the wall
-        targetVelocity = Vector3.Scale(wallDir, new Vector3(Input.GetAxis("Vertical"), 1, Input.GetAxis("Vertical")));
+        // Calculate how fast we should be moving in along the wall
+
+        //Debug.Log("Angle Facing = " + angleFacing);
+        // How should we use the players input based on the angle of the character from the wall.
+        if (angleFacing <= 45 || angleFacing >= 135)
+        {
+            //Debug.Log("Using Vertical Input for Target Velocity");
+            targetVelocity = Vector3.Scale(wallDir, new Vector3(Input.GetAxis("Vertical"), 0, Input.GetAxis("Vertical")));
+        }
+        else if (angleFacing >= 65 && angleFacing <= 115)
+        {
+            targetVelocity = Vector3.Scale(wallDir, new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Horizontal")));
+        }
+        else
+        {
+            targetVelocity = Vector3.Scale(wallDir, new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")));
+        }
+
         //targetVelocity = transform.TransformDirection(targetVelocity);
         targetVelocity *= speed;
 
-        //Debug.Log("Angle between walldirection and Player forwad: " + Vector3.Angle(wallDir, transform.forward));
+        //Debug.Log("TargetVel = " + targetVelocity);
 
         // Apply a force that attempts to reach our target velocity
         velocity = rigid.velocity;
@@ -301,21 +340,33 @@ public class CharacterControls : MonoBehaviour
         velocityChange.z = Mathf.Clamp(velocityChange.z, -maxVelocityChange, maxVelocityChange);
         velocityChange.y = 0;
 
-        rigid.AddForce(velocityChange, ForceMode.VelocityChange);
+        rigid.AddForce(velocityChange * speed);
+    }
+
+    private void AdjustSpeed(float s)
+    {
+        if (onWall)
+        {
+            speed = Mathf.Lerp(speed, s, smoothing * Time.deltaTime);
+        }
+        else
+        {
+            speed = s;
+        }
     }
 
     void Update()
     {
         xzVelocity = new Vector2(rigid.velocity.x, rigid.velocity.z);
 
-        /*test.text = "Target Velocity: " + targetVelocity +
+        test.text = "Target Velocity: " + targetVelocity +
             "\nVelocity Change: " + velocityChange +
             "\nCrrnt Velocity: " + rigid.velocity +
             "\nMagnitude: " + rigid.velocity.magnitude +
             "\nXZMagnitude: " + xzVelocity.magnitude +
             "\nHorizontal: " + Input.GetAxis("Horizontal") + 
             "\nVertical: " + Input.GetAxis("Vertical");
-            */
+            
         // Turning the Player left or right
         if (axes == RotationAxes.MouseXAndY)
         {
@@ -346,16 +397,14 @@ public class CharacterControls : MonoBehaviour
         if (onWall)
         {
             gravity = 1.5f;
-
-            // Push Player towards wall they are colliding with for wall run
-            //rigid.AddForce(-wallNormal.x * 5, 0, -wallNormal.y * 5);
+            AdjustSpeed(wallSpeed);
         }
         else
         {
             gravity = 10.0f;
         }
 
-
+        // What type of move should be used?
         if (onGround)
         {
             if (!isSliding)
@@ -384,25 +433,23 @@ public class CharacterControls : MonoBehaviour
         {
             Sprint();
         }
-        else if (Input.GetAxis("Vertical") <= 0)
+        else if (Input.GetAxis("Vertical") <= 0 || !onGround)
         {
             isSprinting = false;
+        }
 
-            if (!isCrouched)
-            {
-                speed = moveSpeed;
-            }
+        if (!isCrouched && onGround && !isSprinting)
+        {
+            AdjustSpeed(moveSpeed);
         }
 
         // Crouch
         if (Input.GetButtonDown("Slide"))
         {
-            
-
             if (isCrouched)
             {
                 isCrouched = false;
-                speed = moveSpeed;
+                AdjustSpeed(moveSpeed);
             }
             else if (!isCrouched && !onGround)
             {
@@ -420,7 +467,7 @@ public class CharacterControls : MonoBehaviour
                     isSprinting = false;
                 }
                 isCrouched = true;
-                speed = crouchSpeed;
+                AdjustSpeed(crouchSpeed);
             }
         }
 
@@ -446,7 +493,7 @@ public class CharacterControls : MonoBehaviour
             if (rigid.velocity.magnitude < 5)
             {
                 isSliding = false;
-                speed = crouchSpeed;
+                AdjustSpeed(crouchSpeed);
             }
         }
         
