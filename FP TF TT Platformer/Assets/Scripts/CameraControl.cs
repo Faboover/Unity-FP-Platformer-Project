@@ -9,7 +9,7 @@ public class CameraControl : MonoBehaviour
     public RotationAxes axes = RotationAxes.MouseXAndY;
 
     public float sensitivityY = 5F;
-    public float joySensitivityY = 20f;
+    public float joySensitivityY = 10F;
 
     public float minimumY = -60F;
     public float maximumY = 60F;
@@ -25,12 +25,12 @@ public class CameraControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Only Rotates head up and down
+        // Only Rotates head up and down within a set range
         if (axes == RotationAxes.MouseXAndY)
         {
 
             //rotationX = transform.localEulerAngles.x + -(Input.GetAxis("Mouse Y")) * sensitivityY;
-            
+
             // If a controller is plugged in
             if (Input.GetJoystickNames().Length != 0)
             {
@@ -38,13 +38,13 @@ public class CameraControl : MonoBehaviour
             }
             else
             {
-                rotationX = transform.localEulerAngles.x + -(Input.GetAxis("Mouse Y")) * sensitivityY;
+                rotationX = transform.localEulerAngles.x - Input.GetAxis("Mouse Y") * sensitivityY;
             }
 
             //rotationX = Mathf.Clamp (rotationX, minimumY, maximumY);
             if (rotationX <= 60.0f || rotationX >= 300.0f)
             {
-                transform.localEulerAngles = new Vector3(rotationX, 0, 0);
+                transform.localEulerAngles = new Vector3(rotationX, transform.localEulerAngles.y, transform.localEulerAngles.z);
             }
 
         }
