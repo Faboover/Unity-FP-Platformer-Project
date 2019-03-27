@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Timer : MonoBehaviour 
 {
-	
-	float minutes = 0f;
+    public Text time;
+
+    float minutes = 0f;
 	float seconds = 0f;
 	float milliseconds = 0f;
 	string minutesS = "";
@@ -50,6 +52,8 @@ public class Timer : MonoBehaviour
 		else {
 			millisecondsS = "" + (int)milliseconds;
 		}
+
+        time.text = minutesS + ":" + secondsS + ":" + millisecondsS;
 
 		Debug.Log(string.Format("{0}:{1}:{2}", minutesS, secondsS, millisecondsS));
 	}
