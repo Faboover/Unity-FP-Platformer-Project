@@ -45,7 +45,7 @@ MonoBehaviour:
   m_MinSize: {x: 683, y: 492}
   m_MaxSize: {x: 14004, y: 14042}
   vertical: 0
-  controlID: 93
+  controlID: 9
 --- !u!114 &3
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -210,7 +210,7 @@ MonoBehaviour:
   m_MinSize: {x: 406, y: 492}
   m_MaxSize: {x: 10002, y: 14042}
   vertical: 1
-  controlID: 94
+  controlID: 10
 --- !u!114 &10
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -234,7 +234,7 @@ MonoBehaviour:
   m_MinSize: {x: 406, y: 221}
   m_MaxSize: {x: 8006, y: 4021}
   vertical: 0
-  controlID: 95
+  controlID: 11
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -360,20 +360,20 @@ MonoBehaviour:
     m_ShowAllHits: 0
     m_SearchArea: 0
     m_Folders:
-    - Assets/Scenes
+    - Assets/Prefabs/Environment Objs
   m_ViewMode: 1
   m_StartGridSize: 16
   m_LastFolders:
-  - Assets/Scenes
+  - Assets/Prefabs/Environment Objs
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\fjlef\Desktop\Research Project\Unity-FP-Platformer-Project\FP
     TF TT Platformer
   m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 32280000
-    m_LastClickedID: 10290
-    m_ExpandedIDs: 000000002028000024280000322800005a2800009a2800009c28000000ca9a3bffffff7f
+    m_SelectedIDs: 62280000
+    m_LastClickedID: 10338
+    m_ExpandedIDs: 000000008e2700009c270000c6270000fc270000622800006428000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -401,7 +401,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000202800005a280000
+    m_ExpandedIDs: 000000008e2700009c270000c6270000fc2700006228000064280000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -519,9 +519,9 @@ MonoBehaviour:
   m_PersistentViewDataDictionary: {fileID: 0}
   m_TreeViewState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 501befff
-    m_LastClickedID: -1107120
-    m_ExpandedIDs: e433e9ff8ee3e9ffa6fbe9ff1463eaffcc8eebff1cb8ebff22d8ebff4e1befff521befff6e1befff8c1befff08c3f0ff88fdf2ffc2fdf2ff980bf3fffab2f4ffa4daf4ffee21f5ff8e57f5ff125af5ff56d1ffff62ebffff5cfbffff00000000e6280000f42800005a2900008829000090290000c6910000b0920000c69d00003a9e00009eaf0000
+    m_SelectedIDs: 
+    m_LastClickedID: 0
+    m_ExpandedIDs: 9cfbffff00000000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -577,9 +577,9 @@ MonoBehaviour:
   m_isRotationLocked: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: -23.193943, y: -19.157825, z: 40.04132}
+    m_Target: {x: -26.659115, y: -16.42036, z: 36.02749}
     speed: 2
-    m_Value: {x: -23.193943, y: -19.157825, z: 40.04132}
+    m_Value: {x: -26.659115, y: -16.42036, z: 36.02749}
   m_RenderMode: 0
   m_ValidateTrueMetals: 0
   m_SceneViewState:
@@ -605,11 +605,11 @@ MonoBehaviour:
   m_Rotation:
     m_Target: {x: 0.2858964, y: -0.5865463, z: 0.23250894, w: 0.72122556}
     speed: 2
-    m_Value: {x: 0.2858964, y: -0.5865463, z: 0.23250894, w: 0.72122556}
+    m_Value: {x: -0.28589636, y: 0.58654624, z: -0.23250893, w: -0.72122556}
   m_Size:
-    m_Target: 98.517815
+    m_Target: 100.73447
     speed: 2
-    m_Value: 98.517815
+    m_Value: 100.73447
   m_Ortho:
     m_Target: 0
     speed: 2
