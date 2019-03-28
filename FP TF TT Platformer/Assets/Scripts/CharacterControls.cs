@@ -60,6 +60,8 @@ public class CharacterControls : MonoBehaviour
 
     void OnCollisionEnter(Collision obj)
     {
+        Debug.Log("Collided with " + obj.ToString());
+
         //Debug.Log("Rigid Velocity before set to -relative: " + rigid.velocity + 
             //"\nXZMagnitude: " + xzVelocity.magnitude);
 
@@ -73,8 +75,12 @@ public class CharacterControls : MonoBehaviour
         // Goes through all contacts with rigidbody
         foreach (ContactPoint contact in obj.contacts)
         {
-            if (contact.normal.y == 1)
+            Debug.Log("Contact Normal is " + contact.normal);
+
+            Debug.Log("Contact Normal Y is " + contact.normal.y);
+            if (contact.normal.y > 0.85)
             {
+                Debug.Log("Player is on Ground");
                 onGround = true;
                 canJump = true;
 
@@ -127,7 +133,7 @@ public class CharacterControls : MonoBehaviour
         // Goes through all contacts with rigidbody
         foreach (ContactPoint contact in obj.contacts)
         {
-            if (contact.normal.y == 1)
+            if (contact.normal.y > 0.85)
             {
                 onGround = true;
                 canJump = true;
@@ -433,7 +439,7 @@ public class CharacterControls : MonoBehaviour
         {
             Sprint();
         }
-        else if (Input.GetAxis("Vertical") <= 0 || !onGround)
+        else if (Input.GetAxis("Vertical") <= 0)
         {
             isSprinting = false;
         }

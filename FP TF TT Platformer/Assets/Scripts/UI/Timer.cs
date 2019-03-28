@@ -54,7 +54,5 @@ public class Timer : MonoBehaviour
 		}
 
         time.text = minutesS + ":" + secondsS + ":" + millisecondsS;
-
-		Debug.Log(string.Format("{0}:{1}:{2}", minutesS, secondsS, millisecondsS));
 	}
 }
