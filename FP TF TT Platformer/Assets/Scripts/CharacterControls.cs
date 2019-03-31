@@ -296,6 +296,7 @@ public class CharacterControls : MonoBehaviour
         Vector3 targetAngle = transform.TransformDirection(new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")));
 
         bool rayBack = Physics.Raycast(this.transform.position, -this.transform.forward, 0.6f);
+        bool rayForward = Physics.Raycast(this.transform.position, this.transform.forward, 0.6f);
 
         // The angle between the vector the player is facing and the angle of the wall
         float angleFacing = Vector3.Angle(wallDir, transform.forward);
@@ -330,6 +331,18 @@ public class CharacterControls : MonoBehaviour
         else if (rayBack)
         {
             Debug.Log("RayBack is true");
+            Debug.Log("WallDir: " + wallDir + "\tTransform Right: " + this.transform.right);
+            Debug.Log("Angel Between: " + Vector3.Angle(wallDir, this.transform.right));
+            if (Vector3.Angle(wallDir, this.transform.right) > 90)
+            {
+                wallDir *= -1;
+            }
+
+            targetVelocity = Vector3.Scale(wallDir, new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Horizontal")));
+        }
+        else if (rayForward)
+        {
+            Debug.Log("RayForward is true");
             Debug.Log("WallDir: " + wallDir + "\tTransform Right: " + this.transform.right);
             Debug.Log("Angel Between: " + Vector3.Angle(wallDir, this.transform.right));
             if (Vector3.Angle(wallDir, this.transform.right) > 90)
