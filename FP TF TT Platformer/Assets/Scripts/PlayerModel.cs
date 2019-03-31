@@ -7,8 +7,6 @@ public class PlayerModel : MonoBehaviour {
 
     public GameObject playerModel;
 
-    public Text test;
-
     public GameObject cam;
 
     CharacterControls controller;
@@ -19,6 +17,11 @@ public class PlayerModel : MonoBehaviour {
 
     public bool transformed, wallChange;
 
+    public int wallLeftHash;
+    public int wallRightHash;
+
+    Animator camAnim;
+
     // Use this for initialization
     void Start ()
     {
@@ -27,6 +30,14 @@ public class PlayerModel : MonoBehaviour {
         controller = playerModel.GetComponent<CharacterControls>();
 
         cam = GameObject.FindGameObjectWithTag("MainCamera");
+
+        Debug.Log("To String: " + cam.ToString());
+
+        camAnim = cam.GetComponent<Animator>();
+        wallLeftHash = Animator.StringToHash("wallOnLeft");
+        wallRightHash = Animator.StringToHash("wallOnRight");
+
+        Debug.Log(camAnim);
 
         crouchPos = new Vector3(0f, 0f, 0f);
 
@@ -81,14 +92,12 @@ public class PlayerModel : MonoBehaviour {
             bool rayRight = Physics.Raycast(playerModel.transform.position, rayDir, 0.6f);
             bool rayLeft = Physics.Raycast(playerModel.transform.position, -rayDir, 0.6f);
 
-            test.text = "Player Rotation: " + playerModel.transform.localEulerAngles.y +
-                "\nCamZRot: " + cam.transform.localEulerAngles.z +
-                "\nXRayDir: " + xRayDir + "\nZRayDir: " + zRayDir +
-                "\nLeft Ray: " + rayDir +
-                "\nRight Ray: " + -rayDir + 
-                "\nLeft: " + rayLeft + 
-                "\nRight: " + rayRight;
 
+            camAnim.SetBool(wallLeftHash, rayLeft);
+
+            camAnim.SetBool(wallRightHash, rayRight);
+
+            /*
             if (rayRight)
             {
                 cam.transform.localEulerAngles = Vector3.Lerp(cam.transform.localEulerAngles, new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, wallcamRot), smoothing * Time.deltaTime);
@@ -157,6 +166,13 @@ public class PlayerModel : MonoBehaviour {
                     cam.transform.localEulerAngles = Vector3.Lerp(cam.transform.localEulerAngles, new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 0), smoothing * Time.deltaTime);
                 }
             }
+            */
+        }
+        else
+        {
+            camAnim.SetBool(wallLeftHash, false);
+
+            camAnim.SetBool(wallRightHash, false);
         }
     }
 	
