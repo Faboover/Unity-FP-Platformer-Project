@@ -294,7 +294,9 @@ public class CharacterControls : MonoBehaviour
     {
         // Direction player is trying to move towards, to be used for learning the angle between this direction and the wall
         Vector3 targetAngle = transform.TransformDirection(new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")));
-        
+
+        bool rayBack = Physics.Raycast(this.transform.position, -this.transform.forward, 0.6f);
+
         // The angle between the vector the player is facing and the angle of the wall
         float angleFacing = Vector3.Angle(wallDir, transform.forward);
         float angleDif = Vector3.Angle(wallDir, targetAngle);
@@ -325,8 +327,16 @@ public class CharacterControls : MonoBehaviour
             //Debug.Log("Using Vertical Input for Target Velocity");
             targetVelocity = Vector3.Scale(wallDir, new Vector3(Input.GetAxis("Vertical"), 0, Input.GetAxis("Vertical")));
         }
-        else if (angleFacing >= 65 && angleFacing <= 115)
+        else if (rayBack)
         {
+            Debug.Log("RayBack is true");
+            Debug.Log("WallDir: " + wallDir + "\tTransform Right: " + this.transform.right);
+            Debug.Log("Angel Between: " + Vector3.Angle(wallDir, this.transform.right));
+            if (Vector3.Angle(wallDir, this.transform.right) > 90)
+            {
+                wallDir *= -1;
+            }
+
             targetVelocity = Vector3.Scale(wallDir, new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Horizontal")));
         }
         else

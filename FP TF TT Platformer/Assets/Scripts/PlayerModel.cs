@@ -57,6 +57,7 @@ public class PlayerModel : MonoBehaviour {
 
         Vector3 camcrouchPos = playerModel.transform.position;
 
+        /*
         if (playerModel.GetComponent<PlayerMovement>().isCrouched)
         {
             Debug.Log(playerModel.transform.localScale.y);
@@ -72,6 +73,7 @@ public class PlayerModel : MonoBehaviour {
 
             cam.transform.position = Vector3.Lerp(camcrouchPos, camnormalPos, smoothing * Time.deltaTime);
         }
+        */
     }
 
     void HandleWall()

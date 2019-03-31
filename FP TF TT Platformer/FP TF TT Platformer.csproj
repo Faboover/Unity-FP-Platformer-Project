@@ -235,7 +235,6 @@
     <Compile Include="Assets\Scripts\CameraControl.cs" />
     <Compile Include="Assets\Scripts\CharacterControls.cs" />
     <Compile Include="Assets\Scripts\PlayerModel.cs" />
-    <Compile Include="Assets\Scripts\PlayerMovement.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerStatus.cs" />
     <Compile Include="Assets\Scripts\UI\Timer.cs" />
   </ItemGroup>
