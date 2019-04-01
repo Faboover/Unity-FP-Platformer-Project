@@ -75,12 +75,8 @@ public class CharacterControls : MonoBehaviour
         // Goes through all contacts with rigidbody
         foreach (ContactPoint contact in obj.contacts)
         {
-            Debug.Log("Contact Normal is " + contact.normal);
-
-            Debug.Log("Contact Normal Y is " + contact.normal.y);
             if (contact.normal.y > 0.85)
             {
-                Debug.Log("Player is on Ground");
                 onGround = true;
                 canJump = true;
 
@@ -158,6 +154,12 @@ public class CharacterControls : MonoBehaviour
                 onWall = false;
             }
         }
+
+        // Check for Curved Wall, adjust wall direction
+        if (onWall)
+        {
+            
+        }
     }
 
     void OnCollisionExit(Collision obj)
@@ -198,19 +200,19 @@ public class CharacterControls : MonoBehaviour
         {
             if (onGround)
             {
-                Debug.Log("On Ground Jump");
+                //Debug.Log("On Ground Jump");
                 rigid.velocity = new Vector3(rigid.velocity.x, CalculateJumpVerticalSpeed(), rigid.velocity.z);
             }
             else if (!onGround && canJump)
             {
-                Debug.Log("In Air Jump:");
+                //Debug.Log("In Air Jump:");
                 canJump = false;
                 rigid.velocity = new Vector3(rigid.velocity.x, CalculateJumpVerticalSpeed(), rigid.velocity.z);
             }
         }
         else
         {
-            Debug.Log("On Wall Jump, Wall Normal = " + wallNormal + "Current Velocity: " + rigid.velocity + "\nCurrent Speed = " + speed);
+            //Debug.Log("On Wall Jump, Wall Normal = " + wallNormal + "Current Velocity: " + rigid.velocity + "\nCurrent Speed = " + speed);
 
             onWall = false;
             /*
