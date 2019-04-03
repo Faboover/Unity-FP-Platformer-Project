@@ -14,6 +14,8 @@ public class CharacterControls : MonoBehaviour
     private Vector2 xzVelocity;
     private Vector2 wallNormal;
 
+    private Vector3 prevWallDir = new Vector3(0, 0, 0);
+
     public Text test;
 
     public Vector3 velocity;
@@ -43,6 +45,8 @@ public class CharacterControls : MonoBehaviour
     public bool isSliding = false;
     public bool isMoving = false;
 
+    public bool newWall = false;
+
     public float jumpHeight = 2.0f;
     
 
@@ -60,8 +64,6 @@ public class CharacterControls : MonoBehaviour
 
     void OnCollisionEnter(Collision obj)
     {
-        Debug.Log("Collided with " + obj.ToString());
-
         //Debug.Log("Rigid Velocity before set to -relative: " + rigid.velocity + 
             //"\nXZMagnitude: " + xzVelocity.magnitude);
 
@@ -154,12 +156,6 @@ public class CharacterControls : MonoBehaviour
                 onWall = false;
             }
         }
-
-        // Check for Curved Wall, adjust wall direction
-        if (onWall)
-        {
-            
-        }
     }
 
     void OnCollisionExit(Collision obj)
@@ -170,10 +166,12 @@ public class CharacterControls : MonoBehaviour
             onGround = false;
         }
 
+        /*
         if (onWall)
         {
             onWall = false;
         }
+        */
     }
 
     float CalculateJumpVerticalSpeed()
@@ -191,6 +189,138 @@ public class CharacterControls : MonoBehaviour
         else
         {
             return Mathf.Sqrt(2 * jumpHeight * gravity);
+        }
+    }
+
+    private void Check4Wall()
+    {
+        RaycastHit hit;
+
+        float distance = 1f;
+
+        if (Physics.Raycast(this.transform.position, -this.transform.right, out hit, distance))
+        {
+            //Debug.Log("Raycast hit something on the left, " + hit.normal);
+
+            if (hit.normal.y <= 0.1)
+            {
+                if (!onGround)
+                {
+                    onWall = true;
+                }
+                wallDir = Vector3.Cross(hit.normal, Vector3.up);
+
+                if (wallDir != prevWallDir)
+                {
+                    newWall = true;
+
+                    prevWallDir = wallDir;
+                }
+            }
+        }
+        else if (Physics.Raycast(this.transform.position, this.transform.right, out hit, distance))
+        {
+            //Debug.Log("Raycast hit something on the right, " + hit.normal);
+
+            if (hit.normal.y <= 0.1)
+            {
+                if (!onGround)
+                {
+                    onWall = true;
+                }
+                wallDir = Vector3.Cross(hit.normal, Vector3.up);
+
+                if (wallDir != prevWallDir)
+                {
+                    newWall = true;
+
+                    prevWallDir = wallDir;
+                }
+            }
+        }
+        else if (Physics.Raycast(this.transform.position, this.transform.right + this.transform.forward, out hit, distance))
+        {
+            //Debug.Log("Raycast hit something 45 deg on the right, " + hit.normal);
+
+            if (hit.normal.y <= 0.1)
+            {
+                if (!onGround)
+                {
+                    onWall = true;
+                }
+                wallDir = Vector3.Cross(hit.normal, Vector3.up);
+
+                if (wallDir != prevWallDir)
+                {
+                    newWall = true;
+
+                    prevWallDir = wallDir;
+                }
+            }
+        }
+        else if (Physics.Raycast(this.transform.position, -this.transform.right + this.transform.forward, out hit, distance))
+        {
+            //Debug.Log("Raycast hit something 45 deg on the left, " + hit.normal);
+
+            if (hit.normal.y <= 0.1)
+            {
+                if (!onGround)
+                {
+                    onWall = true;
+                }
+                wallDir = Vector3.Cross(hit.normal, Vector3.up);
+
+                if (wallDir != prevWallDir)
+                {
+                    newWall = true;
+
+                    prevWallDir = wallDir;
+                }
+            }
+        }
+        else if (Physics.Raycast(this.transform.position, this.transform.right + -this.transform.forward, out hit, distance))
+        {
+            //Debug.Log("Raycast hit something 135 deg on the right, " + hit.normal);
+
+            if (hit.normal.y <= 0.1)
+            {
+                if (!onGround)
+                {
+                    onWall = true;
+                }
+                wallDir = Vector3.Cross(hit.normal, Vector3.up);
+
+                if (wallDir != prevWallDir)
+                {
+                    newWall = true;
+
+                    prevWallDir = wallDir;
+                }
+            }
+        }
+        else if (Physics.Raycast(this.transform.position, -this.transform.right + -this.transform.forward, out hit, distance))
+        {
+            //Debug.Log("Raycast hit something 135 deg on the left, " + hit.normal);
+
+            if (hit.normal.y <= 0.1)
+            {
+                if (!onGround)
+                {
+                    onWall = true;
+                }
+                wallDir = Vector3.Cross(hit.normal, Vector3.up);
+
+                if (wallDir != prevWallDir)
+                {
+                    newWall = true;
+
+                    prevWallDir = wallDir;
+                }
+            }
+        }
+        else
+        {
+            onWall = false;
         }
     }
 
@@ -309,7 +439,7 @@ public class CharacterControls : MonoBehaviour
         // we will need to adjust the wall vector to follow the players input.
         if (angleFacing >= 90 && angleFacing <= 180)
         {
-            Debug.Log("Flipping Wall Direction from " + wallDir + " to " + -wallDir);
+            //Debug.Log("Flipping Wall Direction from " + wallDir + " to " + -wallDir);
             wallDir *= -1;
         }
         
@@ -332,9 +462,9 @@ public class CharacterControls : MonoBehaviour
         }
         else if (rayBack)
         {
-            Debug.Log("RayBack is true");
-            Debug.Log("WallDir: " + wallDir + "\tTransform Right: " + this.transform.right);
-            Debug.Log("Angel Between: " + Vector3.Angle(wallDir, this.transform.right));
+            //Debug.Log("RayBack is true");
+            //Debug.Log("WallDir: " + wallDir + "\tTransform Right: " + this.transform.right);
+            //Debug.Log("Angel Between: " + Vector3.Angle(wallDir, this.transform.right));
             if (Vector3.Angle(wallDir, this.transform.right) > 90)
             {
                 wallDir *= -1;
@@ -344,9 +474,9 @@ public class CharacterControls : MonoBehaviour
         }
         else if (rayForward)
         {
-            Debug.Log("RayForward is true");
-            Debug.Log("WallDir: " + wallDir + "\tTransform Right: " + this.transform.right);
-            Debug.Log("Angel Between: " + Vector3.Angle(wallDir, this.transform.right));
+            //Debug.Log("RayForward is true");
+            //Debug.Log("WallDir: " + wallDir + "\tTransform Right: " + this.transform.right);
+            //Debug.Log("Angel Between: " + Vector3.Angle(wallDir, this.transform.right));
             if (Vector3.Angle(wallDir, this.transform.right) > 90)
             {
                 wallDir *= -1;
@@ -371,7 +501,16 @@ public class CharacterControls : MonoBehaviour
         velocityChange.z = Mathf.Clamp(velocityChange.z, -maxVelocityChange, maxVelocityChange);
         velocityChange.y = 0;
 
-        rigid.AddForce(velocityChange * speed);
+        
+        if (newWall)
+        { 
+            rigid.AddForce(velocityChange, ForceMode.VelocityChange);
+            newWall = false;
+        }
+        else
+        {
+            rigid.AddForce(velocityChange * speed);
+        }
     }
 
     private void AdjustSpeed(float s)
@@ -390,8 +529,10 @@ public class CharacterControls : MonoBehaviour
     {
         xzVelocity = new Vector2(rigid.velocity.x, rigid.velocity.z);
 
-        test.text = "Target Velocity: " + targetVelocity +
-            "\nVelocity Change: " + velocityChange +
+        test.text = "OnWall: " + onWall +
+            "\nWall Direction: " + wallDir +
+            "\nPrev Wall Dir: " + prevWallDir + 
+            "\nNew Wall: " + newWall +
             "\nCrrnt Velocity: " + rigid.velocity +
             "\nMagnitude: " + rigid.velocity.magnitude +
             "\nXZMagnitude: " + xzVelocity.magnitude +
@@ -445,12 +586,15 @@ public class CharacterControls : MonoBehaviour
         }
         else if (!onGround && onWall)
         {
+            Check4Wall();
+
             WallMove();
         }
         else if(!onGround && isMoving)
         {
             AirMove();
         }
+        
 
         // Jump
         if (canJump && Input.GetButtonDown("Jump"))
