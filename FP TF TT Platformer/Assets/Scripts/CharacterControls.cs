@@ -517,9 +517,9 @@ public class CharacterControls : MonoBehaviour
             rigid.AddForce(velocityChange * speed);
         }
 
-        if (!isTurning)
+        if (!isTurning && isMoving)
         {
-            AdjustRotation(flipping);
+            AdjustRotation();
         }
     }
 
@@ -535,20 +535,61 @@ public class CharacterControls : MonoBehaviour
         }
     }
 
-    private void AdjustRotation(bool flip)
+    private void AdjustRotation()
     {
         // The angle between the vector the player is facing and the angle of the wall
         float angleFacing = Vector3.Angle(wallDir, transform.forward);
 
-        float angleofWall = Mathf.Rad2Deg * Mathf.Atan(wallDir.x / wallDir.z);
+        float h = Mathf.Sqrt(Mathf.Pow(wallDir.x, 2) + Mathf.Pow(wallDir.z, 2));
 
-        float turningRate = 100f;
+        float angleofWall;
+        if (wallDir.x > -0.001 && wallDir.x < 0.001)
+        {
+            angleofWall = Mathf.Rad2Deg * Mathf.Acos(wallDir.z / h);
+        }
+        else if (wallDir.z > -0.001 && wallDir.z < 0.001)
+        {
+            angleofWall = Mathf.Rad2Deg * Mathf.Asin(wallDir.x / h);
+        }
+        else if (wallDir.x > 0)
+        {
+            if (wallDir.x < 0 || wallDir.z < 0)
+            {
+                h *= -1;
 
+                angleofWall = Mathf.Rad2Deg * Mathf.Asin(wallDir.x / h);
+
+                angleofWall += 180;
+            }
+            else
+            {
+                angleofWall = Mathf.Rad2Deg * Mathf.Asin(wallDir.x / h);
+            }
+        }
+        else
+        {
+            if (wallDir.x < 0 || wallDir.z < 0)
+            {
+                h *= -1;
+                angleofWall = Mathf.Rad2Deg * Mathf.Acos(wallDir.z / h);
+
+                angleofWall += 180;
+            }
+            else
+            {
+                angleofWall = Mathf.Rad2Deg * Mathf.Acos(wallDir.z / h);
+            }
+        }
+
+        float turningRate = 150f;
+
+        /*
         if (wallDir.z > -1.01 && wallDir.z < -0.99 && wallDir.x == 0)
         {
             angleofWall = 180;
         }
 
+        
         if (flip)
         {
             if (angleofWall != 0 && angleofWall != 180)
@@ -556,8 +597,8 @@ public class CharacterControls : MonoBehaviour
                 angleofWall += 180;
             }
         }
-
-        Debug.Log("Angleof Wall: " + angleofWall);
+        */
+        Debug.Log("Angleof Wall: " + angleofWall + " Wallx: " + wallDir.x + " Wallz: " + wallDir.z + " H: " + h);
 
         Quaternion quatRot = Quaternion.Euler(0, angleofWall, 0);
 
