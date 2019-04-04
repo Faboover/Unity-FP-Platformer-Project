@@ -444,8 +444,8 @@ public class CharacterControls : MonoBehaviour
         }
         
         // To allow movement away from the wall in the given range
-        if (angleDif > 45 && angleDif < 135)
-        {   
+        if (angleDif > 45 && angleDif < 135 && isMoving)
+        {
             AirMove();
 
             return;
