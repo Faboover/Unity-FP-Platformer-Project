@@ -44,6 +44,7 @@ public class CharacterControls : MonoBehaviour
     public bool isSprinting = false;
     public bool isSliding = false;
     public bool isMoving = false;
+    public bool isTurning = false;
 
     public bool newWall = false;
 
@@ -430,6 +431,8 @@ public class CharacterControls : MonoBehaviour
         bool rayBack = Physics.Raycast(this.transform.position, -this.transform.forward, 0.6f);
         bool rayForward = Physics.Raycast(this.transform.position, this.transform.forward, 0.6f);
 
+        bool flipping = false;
+
         // The angle between the vector the player is facing and the angle of the wall
         float angleFacing = Vector3.Angle(wallDir, transform.forward);
         float angleDif = Vector3.Angle(wallDir, targetAngle);
@@ -439,8 +442,10 @@ public class CharacterControls : MonoBehaviour
         // we will need to adjust the wall vector to follow the players input.
         if (angleFacing >= 90 && angleFacing <= 180)
         {
-            //Debug.Log("Flipping Wall Direction from " + wallDir + " to " + -wallDir);
+            Debug.Log("Flipping Wall Direction from " + wallDir + " to " + -wallDir);
             wallDir *= -1;
+
+            flipping = true;
         }
         
         // To allow movement away from the wall in the given range
@@ -511,6 +516,11 @@ public class CharacterControls : MonoBehaviour
         {
             rigid.AddForce(velocityChange * speed);
         }
+
+        if (!isTurning)
+        {
+            AdjustRotation(flipping);
+        }
     }
 
     private void AdjustSpeed(float s)
@@ -525,24 +535,69 @@ public class CharacterControls : MonoBehaviour
         }
     }
 
+    private void AdjustRotation(bool flip)
+    {
+        // The angle between the vector the player is facing and the angle of the wall
+        float angleFacing = Vector3.Angle(wallDir, transform.forward);
+
+        float angleofWall = Mathf.Rad2Deg * Mathf.Atan(wallDir.x / wallDir.z);
+
+        float turningRate = 100f;
+
+        if (wallDir.z > -1.01 && wallDir.z < -0.99 && wallDir.x == 0)
+        {
+            angleofWall = 180;
+        }
+
+        if (flip)
+        {
+            if (angleofWall != 0 && angleofWall != 180)
+            {
+                angleofWall += 180;
+            }
+        }
+
+        Debug.Log("Angleof Wall: " + angleofWall);
+
+        Quaternion quatRot = Quaternion.Euler(0, angleofWall, 0);
+
+        if (angleFacing <= 45)
+        {
+            //transform.rotation = Quaternion.LookRotation(wallDir);
+
+            // Turn towards our target rotation.
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, quatRot, turningRate * Time.deltaTime);
+        }
+    }
+
     void Update()
     {
+        // Helps keep track of current player xz velocity and magnitude
         xzVelocity = new Vector2(rigid.velocity.x, rigid.velocity.z);
 
+        // Text to display that helps debug
         test.text = "OnWall: " + onWall +
             "\nWall Direction: " + wallDir +
             "\nPrev Wall Dir: " + prevWallDir + 
             "\nNew Wall: " + newWall +
             "\nCrrnt Velocity: " + rigid.velocity +
             "\nMagnitude: " + rigid.velocity.magnitude +
-            "\nXZMagnitude: " + xzVelocity.magnitude +
-            "\nHorizontal: " + Input.GetAxis("Horizontal") + 
-            "\nVertical: " + Input.GetAxis("Vertical");
+            "\nXZMagnitude: " + xzVelocity.magnitude;
             
         // Turning the Player left or right
         if (axes == RotationAxes.MouseXAndY)
         {
             //Debug.Log (Input.GetJoystickNames ().Length);
+
+            // Value to be used when Wallrunning, will see if rotation is being controlled by the player so that player can be rotated towards a wall
+            if (Input.GetAxis("JoyX") != 0 || Input.GetAxis("Mouse X") != 0)
+            {
+                isTurning = true;
+            }
+            else
+            {
+                isTurning = false;
+            }
 
             // If a controller is plugged in
             if (Input.GetJoystickNames().Length != 0)
@@ -557,6 +612,7 @@ public class CharacterControls : MonoBehaviour
             }
         }
 
+        // To see if a player is moving purposely
         if (Input.GetButton("Horizontal") || Input.GetButton("Vertical") || Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
         {
             isMoving = true;
@@ -566,6 +622,8 @@ public class CharacterControls : MonoBehaviour
             isMoving = false;
         }
 
+        // If Player is on a wall, adjust gravity and speed for how to handle while on a wall.
+        // If player isn't make gravity 10
         if (onWall)
         {
             gravity = 1.5f;
@@ -613,6 +671,7 @@ public class CharacterControls : MonoBehaviour
             isSprinting = false;
         }
 
+        // Adjust speed back to regular move speed
         if (!isCrouched && onGround && !isSprinting)
         {
             AdjustSpeed(moveSpeed);
@@ -645,12 +704,7 @@ public class CharacterControls : MonoBehaviour
                 AdjustSpeed(crouchSpeed);
             }
         }
-
-        if (isCrouched && onGround)
-        {
-            //Debug.Log("IsCrouched: " + isCrouched + "OnGround: " + onGround + "IsSliding: " + isSliding +
-                //"\nXZVel: " + xzVelocity + "\tXZMag: " + xzVelocity.magnitude);
-        }
+        
         // Slide
         if (onGround && (xzVelocity.magnitude > 10 && isCrouched) && !isSliding)
         {
@@ -663,6 +717,7 @@ public class CharacterControls : MonoBehaviour
             Slide();
         }
 
+        // While sliding is still true, check if magnitude goes below 5. If so, set sliding to false and set speed to crouch speed
         if (isSliding)
         {
             if (rigid.velocity.magnitude < 5)
@@ -677,7 +732,7 @@ public class CharacterControls : MonoBehaviour
             isSliding = false;
         }
 
-        // We apply gravity manually for more tuning control
+        // Apply manual hard-coded gravity
         rigid.AddForce(new Vector3(0, -gravity * rigid.mass, 0));
     }
 
