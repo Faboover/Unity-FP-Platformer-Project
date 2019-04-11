@@ -36,13 +36,13 @@ public class PlayerStatus : MonoBehaviour
         {
             status.text = state[2];
         }
-        else if (plyrCntrl.isCrouched && plyrCntrl.onGround)
-        {
-            status.text = state[3];
-        }
         else if (plyrCntrl.isSliding)
         {
             status.text = state[4];
+        }
+        else if (plyrCntrl.isCrouched && plyrCntrl.onGround)
+        {
+            status.text = state[3];
         }
         else if (!plyrCntrl.onGround && !plyrCntrl.onWall)
         {

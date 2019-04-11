@@ -15,7 +15,7 @@ public class PlayerModel : MonoBehaviour {
 
     public float smoothing, wallcamRot;
 
-    public bool transformed, wallChange;
+    public bool transformed, wallChange, transBack;
 
     public int wallLeftHash;
     public int wallRightHash;
@@ -31,32 +31,36 @@ public class PlayerModel : MonoBehaviour {
 
         cam = GameObject.FindGameObjectWithTag("MainCamera");
 
-        Debug.Log("To String: " + cam.ToString());
-
         camAnim = cam.GetComponent<Animator>();
         wallLeftHash = Animator.StringToHash("wallOnLeft");
         wallRightHash = Animator.StringToHash("wallOnRight");
-
-        Debug.Log(camAnim);
 
         crouchPos = new Vector3(0f, 0f, 0f);
 
         normalPos = new Vector3(0f, 0.25f, 0f);
 
-        smoothing = 5f;
+        smoothing = 0.5f;
 
         wallcamRot = 10f;
 
         transformed = false;
+        transBack = false; ;
         wallChange = false;
     }
 
     void HandleCrouch()
     {
-        Vector3 camnormalPos = playerModel.transform.position + normalPos;
-
+        
         Vector3 camcrouchPos = playerModel.transform.position;
 
+        Debug.Log(playerModel.transform.localScale.y + ", " + playerModel.transform.localScale.y / 2);
+        playerModel.transform.localScale = new Vector3(1, playerModel.transform.localScale.y / 2, 1);
+        playerModel.transform.position = new Vector3(playerModel.transform.position.x, playerModel.transform.position.y - 0.5f, playerModel.transform.position.z);
+
+        //cam.transform.position = Vector3.Lerp(cam.transform.position, camcrouchPos, smoothing * Time.deltaTime);
+
+        transformed = true;
+        transBack = true;
         /*
         if (playerModel.GetComponent<PlayerMovement>().isCrouched)
         {
@@ -78,97 +82,31 @@ public class PlayerModel : MonoBehaviour {
 
     void HandleWall()
     {
+        float radRight = Mathf.Deg2Rad * (playerModel.transform.localEulerAngles.y);
+
+
+        float xRayDir = Mathf.Cos(-radRight);
+        float zRayDir = Mathf.Sin(-radRight);
+
+        Vector3 rayDir = new Vector3(xRayDir, 0, zRayDir);
+
+        //Debug.Log("Player Rotation: " + playerModel.transform.localEulerAngles.y +
+            //"\nXRayDir: " + xRayDir + "ZRayDir: " + zRayDir);
+
+        bool rayRight = Physics.Raycast(playerModel.transform.position, rayDir, 0.6f);
+        bool rayLeft = Physics.Raycast(playerModel.transform.position, -rayDir, 0.6f);
+        
+        camAnim.SetBool(wallLeftHash, rayLeft);
+
+        camAnim.SetBool(wallRightHash, rayRight);
+    }
+	
+	// Update is called once per frame
+	void Update ()
+    {
         if (controller.onWall)
         {
-            float radRight = Mathf.Deg2Rad * (playerModel.transform.localEulerAngles.y);
-
-
-            float xRayDir = Mathf.Cos(-radRight);
-            float zRayDir = Mathf.Sin(-radRight);
-
-            Vector3 rayDir = new Vector3(xRayDir, 0, zRayDir);
-
-            //Debug.Log("Player Rotation: " + playerModel.transform.localEulerAngles.y +
-                //"\nXRayDir: " + xRayDir + "ZRayDir: " + zRayDir);
-
-            bool rayRight = Physics.Raycast(playerModel.transform.position, rayDir, 0.6f);
-            bool rayLeft = Physics.Raycast(playerModel.transform.position, -rayDir, 0.6f);
-
-
-            camAnim.SetBool(wallLeftHash, rayLeft);
-
-            camAnim.SetBool(wallRightHash, rayRight);
-
-            /*
-            if (rayRight)
-            {
-                cam.transform.localEulerAngles = Vector3.Lerp(cam.transform.localEulerAngles, new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, wallcamRot), smoothing * Time.deltaTime);
-            }
-            else if(rayLeft)
-            {
-                if (cam.transform.localEulerAngles.z > 359)
-                {
-                    cam.transform.localEulerAngles = new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 359);
-                }
-                else if(cam.transform.localEulerAngles.z < 1)
-                {
-                    cam.transform.localEulerAngles = new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 359);
-                }
-
-                cam.transform.localEulerAngles = Vector3.Lerp(cam.transform.localEulerAngles, new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 360 - (wallcamRot)), smoothing * Time.deltaTime);
-            }
-            else
-            {
-                if (cam.transform.localEulerAngles.z != 0)
-                {
-                    if (cam.transform.localEulerAngles.z >= 355)
-                    {
-                        //Debug.Log("On Wall, Angle >= 355: Hard coding z angle to 0");
-                        cam.transform.localEulerAngles = new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 0);
-                    }
-                    else if (cam.transform.localEulerAngles.z < 355 && cam.transform.localEulerAngles.z >= 340)
-                    {
-                        //Debug.Log("On Wall, CamZ is between 359 and 340");
-                        cam.transform.localEulerAngles = Vector3.Lerp(cam.transform.localEulerAngles, new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 359), (smoothing * 9) * Time.deltaTime);
-                    }
-                    else if (cam.transform.localEulerAngles.z <= 5)
-                    {
-                        //Debug.Log("On Wall, Angle <= 5: Hard coding z angle to 0");
-                        cam.transform.localEulerAngles = new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 0);
-                    }
-                    else if (cam.transform.localEulerAngles.z > 5) //&& cam.transform.localEulerAngles.z <= 0)
-                    {
-                        //Debug.Log("On Wall, CamZ is > 5");
-                        cam.transform.localEulerAngles = Vector3.Lerp(cam.transform.localEulerAngles, new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 4), (smoothing * 9) * Time.deltaTime);
-                    }
-                    else
-                    {
-                        cam.transform.localEulerAngles = Vector3.Lerp(cam.transform.localEulerAngles, new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 0), (smoothing * 9) * Time.deltaTime);
-                    }
-                }
-            }
-        }
-        else
-        {
-            if (cam.transform.localEulerAngles.z != 0)
-            {
-                if (cam.transform.localEulerAngles.z >= 359 - 0.5)    
-                {
-                    //Debug.Log("Off Wall, Angle >= 359 - 0.5: Hard coding z angle to 0");
-                    cam.transform.localEulerAngles = new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 0);
-                }
-                else if (cam.transform.localEulerAngles.z < 359 && cam.transform.localEulerAngles.z >= 340)
-                {
-                    //Debug.Log("Off Wall, CamZ is between 359 and 340");
-                    cam.transform.localEulerAngles = Vector3.Lerp(cam.transform.localEulerAngles, new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 359), smoothing * Time.deltaTime);
-                }
-                else
-                {
-                    //Debug.Log("Off Wall, Normal Lerp to rotation of 0");
-                    cam.transform.localEulerAngles = Vector3.Lerp(cam.transform.localEulerAngles, new Vector3(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, 0), smoothing * Time.deltaTime);
-                }
-            }
-            */
+            HandleWall();
         }
         else
         {
@@ -176,13 +114,22 @@ public class PlayerModel : MonoBehaviour {
 
             camAnim.SetBool(wallRightHash, false);
         }
-    }
-	
-	// Update is called once per frame
-	void Update ()
-    {
-
-        HandleWall();
 		
+        if (controller.onGround && controller.isCrouched && !transformed)
+        {
+            HandleCrouch();
+        }
+        else if(transformed && !controller.isCrouched && transBack)
+        {
+            Vector3 camnormalPos = playerModel.transform.position + normalPos;
+
+            playerModel.transform.localScale = new Vector3(1, playerModel.transform.localScale.y * 2, 1);
+            playerModel.transform.position = new Vector3(playerModel.transform.position.x, playerModel.transform.position.y + 0.5f, playerModel.transform.position.z);
+
+            //cam.transform.position = Vector3.Lerp(cam.transform.position, camnormalPos, smoothing * Time.deltaTime);
+
+            transformed = false;
+            transBack = false;
+        }
 	}
 }

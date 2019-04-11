@@ -254,6 +254,8 @@ MonoBehaviour:
   isSprinting: 0
   isSliding: 0
   isMoving: 0
+  isTurning: 0
+  newWall: 0
   jumpHeight: 3
   sensitivityX: 5
   joySensitivityX: 25
@@ -276,6 +278,7 @@ MonoBehaviour:
   wallcamRot: 0
   transformed: 0
   wallChange: 0
+  transBack: 0
   wallLeftHash: 0
   wallRightHash: 0
 --- !u!114 &114542368718809974
