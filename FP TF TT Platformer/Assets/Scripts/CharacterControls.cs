@@ -319,6 +319,86 @@ public class CharacterControls : MonoBehaviour
                 }
             }
         }
+        else if (Physics.Raycast(this.transform.position, (Mathf.Cos(60f) * this.transform.right) + (Mathf.Sin(60f) * this.transform.forward), out hit, distance))
+        {
+            //Debug.Log("Raycast hit something 60 deg on the right, " + hit.normal);
+
+            if (hit.normal.y <= 0.1)
+            {
+                if (!onGround)
+                {
+                    onWall = true;
+                }
+                wallDir = Vector3.Cross(hit.normal, Vector3.up);
+
+                if (wallDir != prevWallDir)
+                {
+                    newWall = true;
+
+                    prevWallDir = wallDir;
+                }
+            }
+        }
+        else if (Physics.Raycast(this.transform.position, (Mathf.Cos(60f) * -this.transform.right) + (Mathf.Sin(60f) * this.transform.forward), out hit, distance))
+        {
+            //Debug.Log("Raycast hit something 60 deg on the left, " + hit.normal);
+
+            if (hit.normal.y <= 0.1)
+            {
+                if (!onGround)
+                {
+                    onWall = true;
+                }
+                wallDir = Vector3.Cross(hit.normal, Vector3.up);
+
+                if (wallDir != prevWallDir)
+                {
+                    newWall = true;
+
+                    prevWallDir = wallDir;
+                }
+            }
+        }
+        else if (Physics.Raycast(this.transform.position, (Mathf.Cos(60f) * this.transform.right) + (Mathf.Sin(60f) * -this.transform.forward), out hit, distance))
+        {
+            //Debug.Log("Raycast hit something 120 deg on the right, " + hit.normal);
+
+            if (hit.normal.y <= 0.1)
+            {
+                if (!onGround)
+                {
+                    onWall = true;
+                }
+                wallDir = Vector3.Cross(hit.normal, Vector3.up);
+
+                if (wallDir != prevWallDir)
+                {
+                    newWall = true;
+
+                    prevWallDir = wallDir;
+                }
+            }
+        }
+        else if (Physics.Raycast(this.transform.position, (Mathf.Cos(60f) * -this.transform.right) + (Mathf.Sin(60f) * -this.transform.forward), out hit, distance))
+        {
+            //Debug.Log("Raycast hit something 120 deg on the left, " + hit.normal);
+
+            if (hit.normal.y <= 0.1)
+            {
+                if (!onGround)
+                {
+                    onWall = true;
+                }
+                wallDir = Vector3.Cross(hit.normal, Vector3.up);
+
+                if (wallDir != prevWallDir)
+                {
+                    newWall = true;
+
+                    prevWallDir = wallDir;
+                }
+            }
+        }
         else
         {
             onWall = false;
@@ -344,6 +424,8 @@ public class CharacterControls : MonoBehaviour
         else
         {
             //Debug.Log("On Wall Jump, Wall Normal = " + wallNormal + "Current Velocity: " + rigid.velocity + "\nCurrent Speed = " + speed);
+            
+            rigid.velocity = new Vector3(rigid.velocity.x + (wallNormal.x * 10), CalculateJumpVerticalSpeed(), rigid.velocity.z + (wallNormal.y * 10));
 
             onWall = false;
             /*
@@ -357,7 +439,6 @@ public class CharacterControls : MonoBehaviour
                 wallNormal.y *= -1;
             }
             */
-            rigid.velocity = new Vector3(rigid.velocity.x + (wallNormal.x * 10), CalculateJumpVerticalSpeed(), rigid.velocity.z + (wallNormal.y * 10));
 
             Debug.Log("Velocity After Wall Jump: " + rigid.velocity);
         }
@@ -390,7 +471,6 @@ public class CharacterControls : MonoBehaviour
 
     void Move()
     {
-
         // Calculate how fast we should be moving
         targetVelocity = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
         targetVelocity = transform.TransformDirection(targetVelocity);
@@ -431,8 +511,6 @@ public class CharacterControls : MonoBehaviour
         bool rayBack = Physics.Raycast(this.transform.position, -this.transform.forward, 0.6f);
         bool rayForward = Physics.Raycast(this.transform.position, this.transform.forward, 0.6f);
 
-        bool flipping = false;
-
         // The angle between the vector the player is facing and the angle of the wall
         float angleFacing = Vector3.Angle(wallDir, transform.forward);
         float angleDif = Vector3.Angle(wallDir, targetAngle);
@@ -444,12 +522,10 @@ public class CharacterControls : MonoBehaviour
         {
             Debug.Log("Flipping Wall Direction from " + wallDir + " to " + -wallDir);
             wallDir *= -1;
-
-            flipping = true;
         }
         
         // To allow movement away from the wall in the given range
-        if (angleDif > 45 && angleDif < 135 && isMoving)
+        if (angleDif > 60 && angleDif < 120 && isMoving)
         {
             AirMove();
 
@@ -507,7 +583,7 @@ public class CharacterControls : MonoBehaviour
         velocityChange.y = 0;
 
         
-        if (newWall)
+        if (newWall && !Input.GetButtonDown("Jump"))
         { 
             rigid.AddForce(velocityChange, ForceMode.VelocityChange);
             newWall = false;
@@ -712,10 +788,14 @@ public class CharacterControls : MonoBehaviour
             isSprinting = false;
         }
 
-        // Adjust speed back to regular move speed
+        // Adjust speed back to regular move speed, sprint speed
         if (!isCrouched && onGround && !isSprinting)
         {
             AdjustSpeed(moveSpeed);
+        }
+        if (!isCrouched && onGround && isSprinting)
+        {
+            AdjustSpeed(sprintSpeed);
         }
 
         // Crouch
