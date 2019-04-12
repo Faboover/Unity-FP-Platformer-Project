@@ -7,6 +7,10 @@ TagManager:
   - Ground
   - Wall
   - Slide
+  - Status
+  - Time
+  - Speed
+  - Button
   layers:
   - Default
   - TransparentFX

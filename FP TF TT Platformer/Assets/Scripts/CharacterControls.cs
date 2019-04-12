@@ -693,13 +693,13 @@ public class CharacterControls : MonoBehaviour
         xzVelocity = new Vector2(rigid.velocity.x, rigid.velocity.z);
 
         // Text to display that helps debug
-        test.text = "OnWall: " + onWall +
-            "\nWall Direction: " + wallDir +
-            "\nPrev Wall Dir: " + prevWallDir + 
-            "\nNew Wall: " + newWall +
-            "\nCrrnt Velocity: " + rigid.velocity +
-            "\nMagnitude: " + rigid.velocity.magnitude +
-            "\nXZMagnitude: " + xzVelocity.magnitude;
+        //test.text = "OnWall: " + onWall +
+        //    "\nWall Direction: " + wallDir +
+        //    "\nPrev Wall Dir: " + prevWallDir + 
+        //    "\nNew Wall: " + newWall +
+        //    "\nCrrnt Velocity: " + rigid.velocity +
+        //    "\nMagnitude: " + rigid.velocity.magnitude +
+        //    "\nXZMagnitude: " + xzVelocity.magnitude;
             
         // Turning the Player left or right
         if (axes == RotationAxes.MouseXAndY)
