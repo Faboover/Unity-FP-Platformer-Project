@@ -14,44 +14,87 @@ public class Timer : MonoBehaviour
 	string secondsS = "";
 	string millisecondsS = "";
 
+    public bool stop;
+
 	// Use this for initialization
-	void Start () {
+	void Start ()
+    {
+        stop = true;
 
-	}
+        minutesS = "00";
+        secondsS = "00";
+        millisecondsS = "00";
+    }
 
-	void Update(){
+    public void StopTImer()
+    {
+        stop = true;
+    }
 
-		if(milliseconds >= 100){
-			if(seconds >= 59){
-				minutes++;
-				seconds = 0;
-			}
-			else if(seconds < 59){
-				seconds++;
-			}
-			milliseconds= 0;
-		}
-		milliseconds+= Time.deltaTime * 100;
-		if (minutes < 10) {
-			minutesS = "0" + minutes;
-		}
-		else {
-			minutesS = "" + minutes;
-		}
+    public void ResumeTimer()
+    {
+        Debug.Log("RESUMING TIMER");
+        stop = false;
+    }
 
-		if (seconds < 10) {
-			secondsS = "0" + seconds;
-		}
-		else {
-			secondsS = "" + seconds;
-		}
+    public void ResetTimer()
+    {
+        stop = true;
 
-		if ((int)milliseconds < 10) {
-			millisecondsS = "0" + (int)milliseconds;
-		}
-		else {
-			millisecondsS = "" + (int)milliseconds;
-		}
+        minutes = 0f;
+        seconds = 0f;
+        milliseconds = 0f;
+
+        minutesS = "00";
+        secondsS = "00";
+        millisecondsS = "00";
+    }
+
+	void Update()
+    {
+        if (!stop)
+        {
+            if (milliseconds >= 100)
+            {
+                if (seconds >= 59)
+                {
+                    minutes++;
+                    seconds = 0;
+                }
+                else if (seconds < 59)
+                {
+                    seconds++;
+                }
+                milliseconds = 0;
+            }
+            milliseconds += Time.deltaTime * 100;
+            if (minutes < 10)
+            {
+                minutesS = "0" + minutes;
+            }
+            else
+            {
+                minutesS = "" + minutes;
+            }
+
+            if (seconds < 10)
+            {
+                secondsS = "0" + seconds;
+            }
+            else
+            {
+                secondsS = "" + seconds;
+            }
+
+            if ((int)milliseconds < 10)
+            {
+                millisecondsS = "0" + (int)milliseconds;
+            }
+            else
+            {
+                millisecondsS = "" + (int)milliseconds;
+            }
+        }
 
         time.text = minutesS + ":" + secondsS + ":" + millisecondsS;
 	}

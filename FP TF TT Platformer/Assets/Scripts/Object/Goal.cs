@@ -6,11 +6,15 @@ public class Goal : MonoBehaviour
 {
     public bool goal;
 
+    public GameObject timer;
+
 	// Use this for initialization
 	void Start ()
     {
         goal = false;
-	}
+
+        timer = GameObject.FindGameObjectWithTag("Time");
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -18,6 +22,8 @@ public class Goal : MonoBehaviour
         {
             Debug.Log("Player entered the goal!");
             goal = true;
+
+            timer.GetComponent<Timer>().StopTImer();
         }
     }
 
