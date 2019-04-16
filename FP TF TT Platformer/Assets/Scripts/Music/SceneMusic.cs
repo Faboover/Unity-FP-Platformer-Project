@@ -49,8 +49,10 @@ public class SceneMusic : MonoBehaviour
 
         if (!musicPicked)
         {
+            Debug.Log(SceneManager.GetActiveScene().name);
             if (SceneManager.GetActiveScene().name.Equals("Title"))
             {
+                Debug.Log("Scene is the Title Screen");
                 this.GetComponent<AudioSource>().clip = music[0];
             }
             else if (SceneManager.GetActiveScene().name.Equals("Credits"))
