@@ -175,6 +175,13 @@ public class CharacterControls : MonoBehaviour
         */
     }
 
+    public int GetXZMag()
+    {
+        int xzMag = (int)xzVelocity.magnitude;
+
+        return xzMag;
+    }
+
     float CalculateJumpVerticalSpeed()
     {
         // From the jump height and gravity we deduce the upwards speed 
