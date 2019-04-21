@@ -2432,15 +2432,15 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4600946452872762, guid: 3cd88d41abff25f478f0b8ace9234c49, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -14.573
+      value: -14.6
       objectReference: {fileID: 0}
     - target: {fileID: 4600946452872762, guid: 3cd88d41abff25f478f0b8ace9234c49, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 3
+      value: 104.1
       objectReference: {fileID: 0}
     - target: {fileID: 4600946452872762, guid: 3cd88d41abff25f478f0b8ace9234c49, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 4600946452872762, guid: 3cd88d41abff25f478f0b8ace9234c49, type: 2}
       propertyPath: m_LocalRotation.x
@@ -2464,12 +2464,32 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 114008557659609450, guid: 3cd88d41abff25f478f0b8ace9234c49,
         type: 2}
-      propertyPath: test
-      value: 
+      propertyPath: slideMultiplier
+      value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 4600946452872762, guid: 3cd88d41abff25f478f0b8ace9234c49, type: 2}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 90
+    - target: {fileID: 114008557659609450, guid: 3cd88d41abff25f478f0b8ace9234c49,
+        type: 2}
+      propertyPath: speedToSlide
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1444963913122892, guid: 3cd88d41abff25f478f0b8ace9234c49, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 54678247181099154, guid: 3cd88d41abff25f478f0b8ace9234c49,
+        type: 2}
+      propertyPath: m_CollisionDetection
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 54678247181099154, guid: 3cd88d41abff25f478f0b8ace9234c49,
+        type: 2}
+      propertyPath: m_IsKinematic
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 54678247181099154, guid: 3cd88d41abff25f478f0b8ace9234c49,
+        type: 2}
+      propertyPath: m_Interpolate
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3cd88d41abff25f478f0b8ace9234c49, type: 2}

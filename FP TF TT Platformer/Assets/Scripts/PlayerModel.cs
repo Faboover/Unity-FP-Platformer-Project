@@ -15,7 +15,7 @@ public class PlayerModel : MonoBehaviour {
 
     public float smoothing, wallcamRot;
 
-    public bool transformed, wallChange, transBack;
+    public bool transformed, wallChange;
 
     public int wallLeftHash;
     public int wallRightHash;
@@ -44,23 +44,50 @@ public class PlayerModel : MonoBehaviour {
         wallcamRot = 10f;
 
         transformed = false;
-        transBack = false; ;
         wallChange = false;
     }
 
     void HandleCrouch()
     {
+        // Crouching and Uncrouching
+        if (controller.onGround && controller.isCrouched && !transformed)
+        {
+            //Vector3 camcrouchPos = playerModel.transform.position;
+
+            //Debug.Log(playerModel.transform.localScale.y + ", " + playerModel.transform.localScale.y / 2);
+            playerModel.transform.localScale = new Vector3(1, playerModel.transform.localScale.y / 2, 1);
+            playerModel.transform.position = new Vector3(playerModel.transform.position.x, playerModel.transform.position.y - 0.5f, playerModel.transform.position.z);
+
+            //cam.transform.position = Vector3.Lerp(cam.transform.position, camcrouchPos, smoothing * Time.deltaTime);
+
+            transformed = true;
+        }
+        else if(!controller.onGround && controller.isCrouched && !transformed)
+        {
+            playerModel.transform.localScale = new Vector3(1, playerModel.transform.localScale.y / 2, 1);
+
+            transformed = true;
+        }
+        else if (controller.onGround && !controller.isCrouched && transformed)
+        {
+            //Vector3 camnormalPos = playerModel.transform.position + normalPos;
+
+            playerModel.transform.localScale = new Vector3(1, playerModel.transform.localScale.y * 2, 1);
+            playerModel.transform.position = new Vector3(playerModel.transform.position.x, playerModel.transform.position.y + 0.5f, playerModel.transform.position.z);
+
+            //cam.transform.position = Vector3.Lerp(cam.transform.position, camnormalPos, smoothing * Time.deltaTime);
+
+            transformed = false;
+        }
+        else if (!controller.onGround && !controller.isCrouched && transformed)
+        {
+            playerModel.transform.localScale = new Vector3(1, playerModel.transform.localScale.y * 2, 1);
+
+            transformed = false;
+        }
+
         
-        Vector3 camcrouchPos = playerModel.transform.position;
-
-        Debug.Log(playerModel.transform.localScale.y + ", " + playerModel.transform.localScale.y / 2);
-        playerModel.transform.localScale = new Vector3(1, playerModel.transform.localScale.y / 2, 1);
-        playerModel.transform.position = new Vector3(playerModel.transform.position.x, playerModel.transform.position.y - 0.5f, playerModel.transform.position.z);
-
-        //cam.transform.position = Vector3.Lerp(cam.transform.position, camcrouchPos, smoothing * Time.deltaTime);
-
-        transformed = true;
-        transBack = true;
+        
         /*
         if (playerModel.GetComponent<PlayerMovement>().isCrouched)
         {
@@ -83,8 +110,7 @@ public class PlayerModel : MonoBehaviour {
     void HandleWall()
     {
         float radRight = Mathf.Deg2Rad * (playerModel.transform.localEulerAngles.y);
-
-
+        
         float xRayDir = Mathf.Cos(-radRight);
         float zRayDir = Mathf.Sin(-radRight);
 
@@ -93,8 +119,8 @@ public class PlayerModel : MonoBehaviour {
         //Debug.Log("Player Rotation: " + playerModel.transform.localEulerAngles.y +
             //"\nXRayDir: " + xRayDir + "ZRayDir: " + zRayDir);
 
-        bool rayRight = Physics.Raycast(playerModel.transform.position, rayDir, 0.6f);
-        bool rayLeft = Physics.Raycast(playerModel.transform.position, -rayDir, 0.6f);
+        bool rayRight = Physics.Raycast(playerModel.transform.position, rayDir, 0.8f);
+        bool rayLeft = Physics.Raycast(playerModel.transform.position, -rayDir, 0.8f);
         
         camAnim.SetBool(wallLeftHash, rayLeft);
 
@@ -114,22 +140,24 @@ public class PlayerModel : MonoBehaviour {
 
             camAnim.SetBool(wallRightHash, false);
         }
-		
-        if (controller.onGround && controller.isCrouched && !transformed)
-        {
-            HandleCrouch();
-        }
-        else if(transformed && !controller.isCrouched && transBack)
-        {
-            Vector3 camnormalPos = playerModel.transform.position + normalPos;
 
-            playerModel.transform.localScale = new Vector3(1, playerModel.transform.localScale.y * 2, 1);
-            playerModel.transform.position = new Vector3(playerModel.transform.position.x, playerModel.transform.position.y + 0.5f, playerModel.transform.position.z);
+        HandleCrouch();
 
-            //cam.transform.position = Vector3.Lerp(cam.transform.position, camnormalPos, smoothing * Time.deltaTime);
+        //if (controller.onGround && controller.isCrouched && !transformed)
+        //{
+            
+        //}
+        //else if(transformed && !controller.isCrouched && transBack)
+        //{
+        //    Vector3 camnormalPos = playerModel.transform.position + normalPos;
 
-            transformed = false;
-            transBack = false;
-        }
+        //    playerModel.transform.localScale = new Vector3(1, playerModel.transform.localScale.y * 2, 1);
+        //    playerModel.transform.position = new Vector3(playerModel.transform.position.x, playerModel.transform.position.y + 0.5f, playerModel.transform.position.z);
+
+        //    //cam.transform.position = Vector3.Lerp(cam.transform.position, camnormalPos, smoothing * Time.deltaTime);
+
+        //    transformed = false;
+        //    transBack = false;
+        //}
 	}
 }

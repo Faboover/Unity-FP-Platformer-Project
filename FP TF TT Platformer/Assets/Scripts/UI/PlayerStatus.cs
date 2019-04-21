@@ -36,6 +36,10 @@ public class PlayerStatus : MonoBehaviour
         {
             status.text = state[2];
         }
+        else if (!plyrCntrl.onGround && !plyrCntrl.onWall)
+        {
+            status.text = state[5];
+        }
         else if (plyrCntrl.isSliding)
         {
             status.text = state[4];
@@ -43,10 +47,6 @@ public class PlayerStatus : MonoBehaviour
         else if (plyrCntrl.isCrouched && plyrCntrl.onGround)
         {
             status.text = state[3];
-        }
-        else if (!plyrCntrl.onGround && !plyrCntrl.onWall)
-        {
-            status.text = state[5];
         }
         else if (plyrCntrl.onWall)
         {

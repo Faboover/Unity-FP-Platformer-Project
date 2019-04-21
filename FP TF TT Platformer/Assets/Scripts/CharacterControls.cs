@@ -29,6 +29,8 @@ public class CharacterControls : MonoBehaviour
     public float wallSpeed;
     public float speed = 10.0f;
 
+    public float speedToSlide = 9;
+
     public float slideMultiplier;
     public float gravity = 10.0f;
     public float maxVelocityChange = 10.0f;
@@ -47,6 +49,7 @@ public class CharacterControls : MonoBehaviour
     public bool isTurning = false;
 
     public bool newWall = false;
+    public bool addedWallYForce = false;
 
     public float jumpHeight = 2.0f;
     
@@ -72,6 +75,8 @@ public class CharacterControls : MonoBehaviour
         // Now able to Slide after landing on the ground
         rigid.velocity = -obj.relativeVelocity;
 
+        //Debug.Log("-Relative Velocity: " + -obj.relativeVelocity);
+
         //Debug.Log("Rigid Velocity after set to -relative: " + rigid.velocity +
             //"\nXZMagnitude: " + xzVelocity.magnitude);
 
@@ -88,11 +93,11 @@ public class CharacterControls : MonoBehaviour
                // Debug.Log("XZVelocity after set to rigid vel: " + xzVelocity +
                     //"\nXAMagnitude: " + xzVelocity.magnitude);
 
-                if (isCrouched && xzVelocity.magnitude <= 10)
-                {
-                    //Debug.Log("Collision: CROUCHED, LANDED, AND MAG <= 10, speed = crouchSpeed");
-                    AdjustSpeed(crouchSpeed);
-                }
+                //if (isCrouched && xzVelocity.magnitude <= 10)
+                //{
+                //    //Debug.Log("Collision: CROUCHED, LANDED, AND MAG <= 10, speed = crouchSpeed");
+                //    AdjustSpeed(crouchSpeed);
+                //}
             }
 
             if (contact.normal.x != 0 || contact.normal.z != 0)
@@ -420,12 +425,26 @@ public class CharacterControls : MonoBehaviour
             {
                 //Debug.Log("On Ground Jump");
                 rigid.velocity = new Vector3(rigid.velocity.x, CalculateJumpVerticalSpeed(), rigid.velocity.z);
+
+                //rigid.AddForce(new Vector3(0, CalculateJumpVerticalSpeed(), 0), ForceMode.VelocityChange);
+
+                if (isSliding)
+                {
+                    isSliding = false;
+                }
             }
             else if (!onGround && canJump)
             {
                 //Debug.Log("In Air Jump:");
                 canJump = false;
                 rigid.velocity = new Vector3(rigid.velocity.x, CalculateJumpVerticalSpeed(), rigid.velocity.z);
+
+                //rigid.AddForce(new Vector3(0, CalculateJumpVerticalSpeed(), 0), ForceMode.VelocityChange);
+
+                if (isSliding)
+                {
+                    isSliding = false;
+                }
             }
         }
         else
@@ -433,6 +452,8 @@ public class CharacterControls : MonoBehaviour
             //Debug.Log("On Wall Jump, Wall Normal = " + wallNormal + "Current Velocity: " + rigid.velocity + "\nCurrent Speed = " + speed);
             
             rigid.velocity = new Vector3(rigid.velocity.x + (wallNormal.x * 10), CalculateJumpVerticalSpeed(), rigid.velocity.z + (wallNormal.y * 10));
+
+            //rigid.AddForce(new Vector3(rigid.velocity.x + (wallNormal.x * 10), CalculateJumpVerticalSpeed(), rigid.velocity.z + (wallNormal.y * 10)), ForceMode.VelocityChange);
 
             onWall = false;
             /*
@@ -447,7 +468,7 @@ public class CharacterControls : MonoBehaviour
             }
             */
 
-            Debug.Log("Velocity After Wall Jump: " + rigid.velocity);
+            //Debug.Log("Velocity After Wall Jump: " + rigid.velocity);
         }
 
         //rigid.AddForce(0, CalculateJumpVerticalSpeed(), 0);
@@ -468,12 +489,17 @@ public class CharacterControls : MonoBehaviour
         isSliding = true;
         Vector2 slideVelocity = xzVelocity * slideMultiplier;
 
+        //Debug.Log("Slide Velocity Magnitude: " + slideVelocity.magnitude + 
+            //"\tSlide Velocity X,Y: " + slideVelocity.x + ", " + slideVelocity.y);
+
         //Debug.Log("Slide Force Not Added, RigidVel: " + rigid.velocity + "\tRigidMag: " + rigid.velocity.magnitude);
 
-        rigid.AddForce(new Vector3(slideVelocity.x, 0, slideVelocity.y));
+        rigid.AddForce(new Vector3(slideVelocity.x, 0, slideVelocity.y), ForceMode.VelocityChange);
 
-        //Debug.Log("Slide Force Added, RigidVel: " + rigid.velocity + "\tRigidMag: " + rigid.velocity.magnitude +
-            //"\n XZVel: " + xzVelocity + "\tXZMag: " + xzVelocity.magnitude);
+
+        //rigid.velocity = new Vector3(slideVelocity.x, 0, slideVelocity.y);
+        Debug.Log("Slide Force Added, RigidVel: " + rigid.velocity + "\tRigidMag: " + rigid.velocity.magnitude +
+            "\n XZVel: " + xzVelocity + "\tXZMag: " + xzVelocity.magnitude);
     }
 
     void Move()
@@ -527,7 +553,7 @@ public class CharacterControls : MonoBehaviour
         // we will need to adjust the wall vector to follow the players input.
         if (angleFacing >= 90 && angleFacing <= 180)
         {
-            Debug.Log("Flipping Wall Direction from " + wallDir + " to " + -wallDir);
+            //Debug.Log("Flipping Wall Direction from " + wallDir + " to " + -wallDir);
             wallDir *= -1;
         }
         
@@ -598,6 +624,45 @@ public class CharacterControls : MonoBehaviour
         else
         {
             rigid.AddForce(velocityChange * speed);
+
+            if (!addedWallYForce)
+            {
+                Debug.Log(rigid.velocity.y);
+
+                Debug.Log(rigid.velocity);
+
+                float yForce = 2500f;
+                if (rigid.velocity.y > 3)
+                {
+                    Debug.Log("Adding downward force");
+
+                    if (rigid.velocity.y > 10)
+                    {
+                        rigid.AddForce(new Vector3(0, -yForce * 2, 0));
+                    }
+                    else
+                    {
+                        rigid.AddForce(new Vector3(0, -yForce, 0));
+                    }
+                }
+                else if(rigid.velocity.y < -2)
+                {
+                    Debug.Log("Adding upward force");
+
+                    if (rigid.velocity.y < -10)
+                    {
+                        rigid.AddForce(new Vector3(0, yForce * 2, 0));
+                    }
+                    else
+                    {
+                        rigid.AddForce(new Vector3(0, yForce, 0));
+                    }
+                }
+
+                Debug.Log(rigid.velocity);
+
+                addedWallYForce = true;
+            }
         }
 
         if (!isTurning && isMoving)
@@ -681,7 +746,7 @@ public class CharacterControls : MonoBehaviour
             }
         }
         */
-        Debug.Log("Angleof Wall: " + angleofWall + " Wallx: " + wallDir.x + " Wallz: " + wallDir.z + " H: " + h);
+        //Debug.Log("Angleof Wall: " + angleofWall + " Wallx: " + wallDir.x + " Wallz: " + wallDir.z + " H: " + h);
 
         Quaternion quatRot = Quaternion.Euler(0, angleofWall, 0);
 
@@ -763,20 +828,29 @@ public class CharacterControls : MonoBehaviour
         {
             if (!isSliding)
             {
+                //Debug.Log("Move Called");
                 Move();
             }
         }
         else if (!onGround && onWall)
         {
-            Check4Wall();
+            isCrouched = false;
+            isSliding = false;
 
+            Check4Wall();
+            //Debug.Log("Wall Move Called");
             WallMove();
         }
         else if(!onGround && isMoving)
         {
+            //Debug.Log("Air Move Called");
             AirMove();
         }
         
+        if (!onWall)
+        {
+            addedWallYForce = false;
+        }
 
         // Jump
         if (canJump && Input.GetButtonDown("Jump"))
@@ -808,6 +882,7 @@ public class CharacterControls : MonoBehaviour
         // Crouch
         if (Input.GetButtonDown("Slide"))
         {
+            //Debug.Log("Crouch Pressed");
             if (isCrouched)
             {
                 isCrouched = false;
@@ -834,7 +909,7 @@ public class CharacterControls : MonoBehaviour
         }
         
         // Slide
-        if (onGround && (xzVelocity.magnitude > 10 && isCrouched) && !isSliding)
+        if (onGround && (xzVelocity.magnitude > speedToSlide && isCrouched) && !isSliding)
         {
             if (isSprinting)
             {
@@ -845,6 +920,7 @@ public class CharacterControls : MonoBehaviour
             Slide();
         }
 
+        //Debug.Log("isSliding: " + isSliding + "\tRigid Velocity Mag: " + rigid.velocity.magnitude);
         // While sliding is still true, check if magnitude goes below 5. If so, set sliding to false and set speed to crouch speed
         if (isSliding)
         {
@@ -855,14 +931,12 @@ public class CharacterControls : MonoBehaviour
             }
         }
         
-        if (!onGround)
-        {
-            isSliding = false;
-        }
+        //if (!onGround)
+        //{
+        //    isSliding = false;
+        //}
 
         // Apply manual hard-coded gravity
         rigid.AddForce(new Vector3(0, -gravity * rigid.mass, 0));
     }
-
-
 }
