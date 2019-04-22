@@ -236,8 +236,11 @@
     <Compile Include="Assets\Scripts\CharacterControls.cs" />
     <Compile Include="Assets\Scripts\Music\SceneMusic.cs" />
     <Compile Include="Assets\Scripts\Object\Goal.cs" />
+    <Compile Include="Assets\Scripts\Object\LoadScenes.cs" />
+    <Compile Include="Assets\Scripts\Object\PlayerSpawner.cs" />
     <Compile Include="Assets\Scripts\Object\Starting.cs" />
     <Compile Include="Assets\Scripts\PlayerModel.cs" />
+    <Compile Include="Assets\Scripts\UI\Button.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerStatus.cs" />
     <Compile Include="Assets\Scripts\UI\Speed.cs" />
     <Compile Include="Assets\Scripts\UI\Timer.cs" />

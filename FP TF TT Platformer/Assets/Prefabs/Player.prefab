@@ -101,7 +101,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1444963913122892}
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -14.573, y: 3, z: 0}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4494605549078844}
@@ -243,8 +243,8 @@ MonoBehaviour:
   crouchSpeed: 5
   wallSpeed: 15
   speed: 7
-  speedToSlide: 9
-  slideMultiplier: 5
+  speedToSlide: 7
+  slideMultiplier: 0.5
   gravity: 9.8
   maxVelocityChange: 10
   smoothing: 2.5
@@ -257,6 +257,7 @@ MonoBehaviour:
   isMoving: 0
   isTurning: 0
   newWall: 0
+  addedWallYForce: 0
   jumpHeight: 3
   sensitivityX: 5
   joySensitivityX: 25
@@ -279,7 +280,6 @@ MonoBehaviour:
   wallcamRot: 0
   transformed: 0
   wallChange: 0
-  transBack: 0
   wallLeftHash: 0
   wallRightHash: 0
 --- !u!114 &114542368718809974

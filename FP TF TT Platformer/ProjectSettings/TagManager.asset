@@ -11,6 +11,8 @@ TagManager:
   - Time
   - Speed
   - Button
+  - Handler
+  - Kill
   layers:
   - Default
   - TransparentFX

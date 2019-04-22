@@ -23,6 +23,8 @@ public class CharacterControls : MonoBehaviour
     private Vector3 targetVelocity;
     private Vector3 wallDir;
 
+    public GameObject spawner;
+
     public float moveSpeed;
     public float sprintSpeed;
     public float crouchSpeed;
@@ -178,6 +180,14 @@ public class CharacterControls : MonoBehaviour
             onWall = false;
         }
         */
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Kill")
+        {
+            spawner.GetComponent<PlayerSpawner>().Respawn();
+        }
     }
 
     public int GetXZMag()
