@@ -12,14 +12,24 @@ public class Speed : MonoBehaviour
 	// Use this for initialization
 	void Start ()
     {
-        player = GameObject.FindGameObjectWithTag("Player");
-
 
 	}
 	
+    private void FindPlayer()
+    {
+        player = GameObject.FindGameObjectWithTag("Player");
+    }
+
 	// Update is called once per frame
 	void Update ()
     {
-        speed.text = "" + player.GetComponent<CharacterControls>().GetXZMag();
+        if (player == null)
+        {
+            FindPlayer();
+        }
+        else
+        {
+            speed.text = "" + player.GetComponent<CharacterControls>().GetXZMag();
+        }
 	}
 }

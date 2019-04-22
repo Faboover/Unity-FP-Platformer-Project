@@ -17,18 +17,18 @@ public class PlayerStatus : MonoBehaviour
 	void Start ()
     {
         status.text = state[0];
+	}
 
+    private void FindPlayer()
+    {
+        player = GameObject.FindGameObjectWithTag("Player");
 
         plyrCntrl = player.GetComponent<CharacterControls>();
-
-        Debug.Log(player.GetComponent<CharacterControls>());
-
-	}
+    }
 	
-	// Update is called once per frame
-	void Update ()
+    private void DetermineStatus()
     {
-		if (plyrCntrl.isMoving && !plyrCntrl.isSprinting && !plyrCntrl.isCrouched && plyrCntrl.onGround)
+        if (plyrCntrl.isMoving && !plyrCntrl.isSprinting && !plyrCntrl.isCrouched && plyrCntrl.onGround)
         {
             status.text = state[1];
         }
@@ -55,6 +55,19 @@ public class PlayerStatus : MonoBehaviour
         else
         {
             status.text = state[0];
+        }
+    }
+
+	// Update is called once per frame
+	void Update ()
+    {
+		if (player == null)
+        {
+            FindPlayer();
+        }
+        else
+        {
+            DetermineStatus();
         }
 	}
 }

@@ -203,6 +203,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   time: {fileID: 114673729168989886}
+  stop: 0
 --- !u!114 &114847499882641962
 MonoBehaviour:
   m_ObjectHideFlags: 1

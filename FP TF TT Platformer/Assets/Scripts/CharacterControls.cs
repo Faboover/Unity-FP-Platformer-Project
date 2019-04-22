@@ -45,6 +45,7 @@ public class CharacterControls : MonoBehaviour
     public bool onWall = false;
 
     public bool isCrouched = false;
+    public bool canStand = true;
     public bool isSprinting = false;
     public bool isSliding = false;
     public bool isMoving = false;
@@ -427,6 +428,14 @@ public class CharacterControls : MonoBehaviour
         }
     }
 
+
+    // If this returns true, there is a ceiling or object directly above the player.
+    // Uncrouching/Standing should thus be prevented
+    private bool Check4Ceiling()
+    {
+        return Physics.Raycast(this.transform.position, this.transform.up, 1f);
+    }
+
     void Jump()
     {
         if (!onWall)
@@ -486,10 +495,6 @@ public class CharacterControls : MonoBehaviour
 
     void Sprint()
     {
-        // Cancels Slide
-        isCrouched = false;
-        isSliding = false;
-
         AdjustSpeed(sprintSpeed);
         isSprinting = true;
     }
@@ -865,14 +870,29 @@ public class CharacterControls : MonoBehaviour
         // Jump
         if (canJump && Input.GetButtonDown("Jump"))
         {
-            isCrouched = false;
+            if (isCrouched && canStand)
+            {
+                isCrouched = false;
+            }
+
             Jump();
         }
 
         // Sprint
         if (Input.GetButtonDown("Sprint"))
         {
-            Sprint();
+            if (isCrouched && canStand)
+            {
+                isCrouched = false;
+                isSliding = false;
+
+                Sprint();
+            }
+            else
+            {
+                Sprint();
+            }
+
         }
         else if (Input.GetAxis("Vertical") <= 0)
         {
@@ -893,7 +913,7 @@ public class CharacterControls : MonoBehaviour
         if (Input.GetButtonDown("Slide"))
         {
             //Debug.Log("Crouch Pressed");
-            if (isCrouched)
+            if (isCrouched && canStand)
             {
                 isCrouched = false;
                 AdjustSpeed(moveSpeed);
@@ -917,7 +937,12 @@ public class CharacterControls : MonoBehaviour
                 AdjustSpeed(crouchSpeed);
             }
         }
-        
+
+        if (isCrouched)
+        {
+            canStand = !Check4Ceiling();
+        }
+
         // Slide
         if (onGround && (xzVelocity.magnitude > speedToSlide && isCrouched) && !isSliding)
         {
