@@ -879,7 +879,7 @@ public class CharacterControls : MonoBehaviour
         }
 
         // Sprint
-        if (Input.GetButtonDown("Sprint"))
+        if (Input.GetButtonDown("Sprint") && isMoving)
         {
             if (isCrouched && canStand)
             {
@@ -916,6 +916,8 @@ public class CharacterControls : MonoBehaviour
             if (isCrouched && canStand)
             {
                 isCrouched = false;
+                isSliding = false;
+
                 AdjustSpeed(moveSpeed);
             }
             else if (!isCrouched && !onGround)
@@ -925,6 +927,7 @@ public class CharacterControls : MonoBehaviour
             else if (isCrouched && !onGround)
             {
                 isCrouched = false;
+                isSliding = false;
             }
             else
             {
