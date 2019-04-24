@@ -55,7 +55,7 @@ public class CharacterControls : MonoBehaviour
     public bool addedWallYForce = false;
 
     public float jumpHeight = 2.0f;
-    
+
 
     public float sensitivityX;
     public float joySensitivityX;
@@ -72,7 +72,7 @@ public class CharacterControls : MonoBehaviour
     void OnCollisionEnter(Collision obj)
     {
         //Debug.Log("Rigid Velocity before set to -relative: " + rigid.velocity + 
-            //"\nXZMagnitude: " + xzVelocity.magnitude);
+        //"\nXZMagnitude: " + xzVelocity.magnitude);
 
         // Stops Rigidbody from being zeroed out for On Collision Enter
         // Now able to Slide after landing on the ground
@@ -81,7 +81,7 @@ public class CharacterControls : MonoBehaviour
         //Debug.Log("-Relative Velocity: " + -obj.relativeVelocity);
 
         //Debug.Log("Rigid Velocity after set to -relative: " + rigid.velocity +
-            //"\nXZMagnitude: " + xzVelocity.magnitude);
+        //"\nXZMagnitude: " + xzVelocity.magnitude);
 
         // Goes through all contacts with rigidbody
         foreach (ContactPoint contact in obj.contacts)
@@ -93,8 +93,8 @@ public class CharacterControls : MonoBehaviour
 
                 xzVelocity = new Vector2(rigid.velocity.x, rigid.velocity.z);
 
-               // Debug.Log("XZVelocity after set to rigid vel: " + xzVelocity +
-                    //"\nXAMagnitude: " + xzVelocity.magnitude);
+                // Debug.Log("XZVelocity after set to rigid vel: " + xzVelocity +
+                //"\nXAMagnitude: " + xzVelocity.magnitude);
 
                 //if (isCrouched && xzVelocity.magnitude <= 10)
                 //{
@@ -159,7 +159,7 @@ public class CharacterControls : MonoBehaviour
                     wallDir = Vector3.Cross(contact.normal, Vector3.up);
                 }
             }
-            
+
             if (onGround)
             {
                 onWall = false;
@@ -469,7 +469,7 @@ public class CharacterControls : MonoBehaviour
         else
         {
             //Debug.Log("On Wall Jump, Wall Normal = " + wallNormal + "Current Velocity: " + rigid.velocity + "\nCurrent Speed = " + speed);
-            
+
             rigid.velocity = new Vector3(rigid.velocity.x + (wallNormal.x * 10), CalculateJumpVerticalSpeed(), rigid.velocity.z + (wallNormal.y * 10));
 
             //rigid.AddForce(new Vector3(rigid.velocity.x + (wallNormal.x * 10), CalculateJumpVerticalSpeed(), rigid.velocity.z + (wallNormal.y * 10)), ForceMode.VelocityChange);
@@ -495,8 +495,19 @@ public class CharacterControls : MonoBehaviour
 
     void Sprint()
     {
-        AdjustSpeed(sprintSpeed);
-        isSprinting = true;
+        if (isCrouched && canStand)
+        {
+            isCrouched = false;
+            isSliding = false;
+
+            AdjustSpeed(sprintSpeed);
+            isSprinting = true;
+        }
+        else if (!isCrouched)
+        {
+            AdjustSpeed(sprintSpeed);
+            isSprinting = true;
+        }
     }
 
     void Slide()
@@ -573,7 +584,7 @@ public class CharacterControls : MonoBehaviour
         }
         
         // To allow movement away from the wall in the given range
-        if (angleDif > 60 && angleDif < 120 && isMoving)
+        if (angleDif > 45 && angleDif < 135 && isMoving)
         {
             AirMove();
 
@@ -647,7 +658,7 @@ public class CharacterControls : MonoBehaviour
                 Debug.Log(rigid.velocity);
 
                 float yForce = 2500f;
-                if (rigid.velocity.y > 3)
+                if (rigid.velocity.y > 5)
                 {
                     Debug.Log("Adding downward force");
 
@@ -881,18 +892,7 @@ public class CharacterControls : MonoBehaviour
         // Sprint
         if (Input.GetButtonDown("Sprint") && isMoving)
         {
-            if (isCrouched && canStand)
-            {
-                isCrouched = false;
-                isSliding = false;
-
-                Sprint();
-            }
-            else
-            {
-                Sprint();
-            }
-
+            Sprint();
         }
         else if (Input.GetAxis("Vertical") <= 0)
         {
