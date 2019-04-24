@@ -72,10 +72,9 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 224106384632462806}
-  - component: {fileID: 114205931398857436}
   - component: {fileID: 222590606625977732}
-  - component: {fileID: 114269977099222492}
   - component: {fileID: 114990389343297638}
+  - component: {fileID: 114697976246930930}
   m_Layer: 5
   m_Name: PlayerStatus
   m_TagString: Status
@@ -83,53 +82,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &114205931398857436
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1200745689984678}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 30
-    m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 3
-    m_MaxSize: 40
-    m_Alignment: 0
-    m_AlignByGeometry: 0
-    m_RichText: 1
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
-    m_LineSpacing: 1
-  m_Text: Status
---- !u!114 &114269977099222492
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1200745689984678}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -900027084, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
-  m_EffectDistance: {x: 1, y: -1}
-  m_UseGraphicAlpha: 1
 --- !u!114 &114459903606367638
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -191,6 +143,33 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 00:00:00
+--- !u!114 &114697976246930930
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1200745689984678}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_Sprite: {fileID: 21300000, guid: a5551941096aa0745afff8ea3fd6b84d, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
 --- !u!114 &114747002443278204
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -261,7 +240,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 661f064d5bd36ff4392822d3f7792f59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  status: {fileID: 114205931398857436}
+  status: {fileID: 114697976246930930}
+  images:
+  - {fileID: 21300000, guid: 883bb84d622726d49a37a2229a9bb438, type: 3}
+  - {fileID: 21300000, guid: 9704a9a371460a14581729d22b7f66bd, type: 3}
+  - {fileID: 21300000, guid: 111be8514223a4041a076249dd8a7b25, type: 3}
+  - {fileID: 21300000, guid: 9c7504cb47f294042bcb328414992240, type: 3}
+  - {fileID: 21300000, guid: 9321b2da2020f4048a0c3bd1e8167ebc, type: 3}
+  - {fileID: 21300000, guid: b027bbbd151a6674a83038320ef0b829, type: 3}
+  - {fileID: 21300000, guid: a5551941096aa0745afff8ea3fd6b84d, type: 3}
   state:
   - Standing
   - Walking
@@ -305,8 +292,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -249.5, y: -160.5}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: -300, y: -125}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224268369609071596
 RectTransform:
