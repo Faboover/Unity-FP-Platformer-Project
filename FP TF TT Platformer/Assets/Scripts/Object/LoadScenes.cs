@@ -18,6 +18,11 @@ public class LoadScenes : MonoBehaviour
         SceneManager.LoadScene("Title", LoadSceneMode.Single);
     }
 
+    public void LoadLvlSelect()
+    {
+        SceneManager.LoadScene("Level Select", LoadSceneMode.Single);
+    }
+
     // Loads the next level
     public void NextLevel()
     {

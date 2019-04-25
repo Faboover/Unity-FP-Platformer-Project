@@ -19,19 +19,26 @@ public class SceneMusic : MonoBehaviour
 	void Start ()
     {
         musicPicked = false;
-        
 	}
 	
     public void PlaySelectionMusic()
     {
         prevMusic = this.GetComponent<AudioSource>().clip;
         this.GetComponent<AudioSource>().clip = music[1];
+        this.GetComponent<AudioSource>().Play();
+        musicPicked = true;
     }
 
     public void PlayCompletionMusic()
     {
-        prevMusic = this.GetComponent<AudioSource>().clip;
-        this.GetComponent<AudioSource>().clip = music[3];
+        if (this.GetComponent<AudioSource>().clip != music[3])
+        {
+            Debug.Log("Completion Music Played");
+            prevMusic = this.GetComponent<AudioSource>().clip;
+            this.GetComponent<AudioSource>().clip = music[3];
+            this.GetComponent<AudioSource>().Play();
+            musicPicked = true;
+        }
     }
 
     public void PlayPrevMusic()
@@ -39,6 +46,8 @@ public class SceneMusic : MonoBehaviour
         if (prevMusic != null)
         {
             this.GetComponent<AudioSource>().clip = prevMusic;
+            this.GetComponent<AudioSource>().Play();
+            musicPicked = true;
         }
     }
 

@@ -15,6 +15,7 @@ public class CharacterControls : MonoBehaviour
     private Vector2 wallNormal;
 
     private Vector3 prevWallDir = new Vector3(0, 0, 0);
+    private Vector3 prevVelocity;
 
     public Text test;
 
@@ -54,6 +55,8 @@ public class CharacterControls : MonoBehaviour
     public bool newWall = false;
     public bool addedWallYForce = false;
 
+    public bool pause;
+
     public float jumpHeight = 2.0f;
 
 
@@ -67,6 +70,8 @@ public class CharacterControls : MonoBehaviour
         rigid = GetComponent<Rigidbody>();
         rigid.freezeRotation = true;
         rigid.useGravity = false;
+
+        pause = false;
     }
 
     void OnCollisionEnter(Collision obj)
@@ -653,14 +658,14 @@ public class CharacterControls : MonoBehaviour
 
             if (!addedWallYForce)
             {
-                Debug.Log(rigid.velocity.y);
+                //Debug.Log(rigid.velocity.y);
 
-                Debug.Log(rigid.velocity);
+                //Debug.Log(rigid.velocity);
 
                 float yForce = 2500f;
                 if (rigid.velocity.y > 5)
                 {
-                    Debug.Log("Adding downward force");
+                    //Debug.Log("Adding downward force");
 
                     if (rigid.velocity.y > 10)
                     {
@@ -673,7 +678,7 @@ public class CharacterControls : MonoBehaviour
                 }
                 else if(rigid.velocity.y < -2)
                 {
-                    Debug.Log("Adding upward force");
+                    //Debug.Log("Adding upward force");
 
                     if (rigid.velocity.y < -10)
                     {
@@ -685,7 +690,7 @@ public class CharacterControls : MonoBehaviour
                     }
                 }
 
-                Debug.Log(rigid.velocity);
+                //Debug.Log(rigid.velocity);
 
                 addedWallYForce = true;
             }
@@ -785,196 +790,215 @@ public class CharacterControls : MonoBehaviour
         }
     }
 
+    public void PausePlayer()
+    {
+        prevVelocity = rigid.velocity;
+
+        rigid.velocity = new Vector3(0, 0, 0);
+
+        pause = true;
+    }
+
+    public void UnpausePlayer()
+    {
+        rigid.velocity = prevVelocity;
+
+        pause = false;
+    }
+
     void Update()
     {
-        // Helps keep track of current player xz velocity and magnitude
-        xzVelocity = new Vector2(rigid.velocity.x, rigid.velocity.z);
-
-        // Text to display that helps debug
-        //test.text = "OnWall: " + onWall +
-        //    "\nWall Direction: " + wallDir +
-        //    "\nPrev Wall Dir: " + prevWallDir + 
-        //    "\nNew Wall: " + newWall +
-        //    "\nCrrnt Velocity: " + rigid.velocity +
-        //    "\nMagnitude: " + rigid.velocity.magnitude +
-        //    "\nXZMagnitude: " + xzVelocity.magnitude;
-            
-        // Turning the Player left or right
-        if (axes == RotationAxes.MouseXAndY)
+        if (!pause)
         {
-            //Debug.Log (Input.GetJoystickNames ().Length);
+            // Helps keep track of current player xz velocity and magnitude
+            xzVelocity = new Vector2(rigid.velocity.x, rigid.velocity.z);
 
-            // Value to be used when Wallrunning, will see if rotation is being controlled by the player so that player can be rotated towards a wall
-            if (Input.GetAxis("JoyX") != 0 || Input.GetAxis("Mouse X") != 0)
+            // Text to display that helps debug
+            //test.text = "OnWall: " + onWall +
+            //    "\nWall Direction: " + wallDir +
+            //    "\nPrev Wall Dir: " + prevWallDir + 
+            //    "\nNew Wall: " + newWall +
+            //    "\nCrrnt Velocity: " + rigid.velocity +
+            //    "\nMagnitude: " + rigid.velocity.magnitude +
+            //    "\nXZMagnitude: " + xzVelocity.magnitude;
+
+            // Turning the Player left or right
+            if (axes == RotationAxes.MouseXAndY)
             {
-                isTurning = true;
-            }
-            else
-            {
-                isTurning = false;
-            }
+                //Debug.Log (Input.GetJoystickNames ().Length);
 
-            // If a controller is plugged in
-            if (Input.GetJoystickNames().Length != 0)
-            {
-                rigid.MoveRotation(rigid.rotation * Quaternion.Euler(new Vector3(0, Input.GetAxis("JoyX") * joySensitivityX, 0)));
-            }
-            else
-            {
-                //rotationY = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * sensitivityX;
-
-                rigid.MoveRotation(rigid.rotation * Quaternion.Euler(new Vector3(0, Input.GetAxis("Mouse X") * sensitivityX, 0)));
-            }
-        }
-
-        // To see if a player is moving purposely
-        if (Input.GetButton("Horizontal") || Input.GetButton("Vertical") || Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
-        {
-            isMoving = true;
-        }
-        else
-        {
-            isMoving = false;
-        }
-
-        // If Player is on a wall, adjust gravity and speed for how to handle while on a wall.
-        // If player isn't make gravity 10
-        if (onWall)
-        {
-            gravity = 1.5f;
-            AdjustSpeed(wallSpeed);
-        }
-        else
-        {
-            gravity = 10.0f;
-        }
-
-        // What type of move should be used?
-        if (onGround)
-        {
-            if (!isSliding)
-            {
-                //Debug.Log("Move Called");
-                Move();
-            }
-        }
-        else if (!onGround && onWall)
-        {
-            isCrouched = false;
-            isSliding = false;
-
-            Check4Wall();
-            //Debug.Log("Wall Move Called");
-            WallMove();
-        }
-        else if(!onGround && isMoving)
-        {
-            //Debug.Log("Air Move Called");
-            AirMove();
-        }
-        
-        if (!onWall)
-        {
-            addedWallYForce = false;
-        }
-
-        // Jump
-        if (canJump && Input.GetButtonDown("Jump"))
-        {
-            if (isCrouched && canStand)
-            {
-                isCrouched = false;
-            }
-
-            Jump();
-        }
-
-        // Sprint
-        if (Input.GetButtonDown("Sprint") && isMoving)
-        {
-            Sprint();
-        }
-        else if (Input.GetAxis("Vertical") <= 0)
-        {
-            isSprinting = false;
-        }
-
-        // Adjust speed back to regular move speed, sprint speed
-        if (!isCrouched && onGround && !isSprinting)
-        {
-            AdjustSpeed(moveSpeed);
-        }
-        if (!isCrouched && onGround && isSprinting)
-        {
-            AdjustSpeed(sprintSpeed);
-        }
-
-        // Crouch
-        if (Input.GetButtonDown("Slide"))
-        {
-            //Debug.Log("Crouch Pressed");
-            if (isCrouched && canStand)
-            {
-                isCrouched = false;
-                isSliding = false;
-
-                AdjustSpeed(moveSpeed);
-            }
-            else if (!isCrouched && !onGround)
-            {
-                isCrouched = true;
-            }
-            else if (isCrouched && !onGround)
-            {
-                isCrouched = false;
-                isSliding = false;
-            }
-            else
-            {
-                //Debug.Log("SLIDE BUTTON PRESSED ELSE, speed = crouchSpeed");
-                if (isSprinting && onGround)
+                // Value to be used when Wallrunning, will see if rotation is being controlled by the player so that player can be rotated towards a wall
+                if (Input.GetAxis("JoyX") != 0 || Input.GetAxis("Mouse X") != 0)
                 {
-                    isSprinting = false;
+                    isTurning = true;
                 }
-                isCrouched = true;
-                AdjustSpeed(crouchSpeed);
+                else
+                {
+                    isTurning = false;
+                }
+
+                // If a controller is plugged in
+                if (Input.GetJoystickNames().Length != 0)
+                {
+                    rigid.MoveRotation(rigid.rotation * Quaternion.Euler(new Vector3(0, Input.GetAxis("JoyX") * joySensitivityX, 0)));
+                }
+                else
+                {
+                    //rotationY = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * sensitivityX;
+
+                    rigid.MoveRotation(rigid.rotation * Quaternion.Euler(new Vector3(0, Input.GetAxis("Mouse X") * sensitivityX, 0)));
+                }
             }
-        }
 
-        if (isCrouched)
-        {
-            canStand = !Check4Ceiling();
-        }
+            // To see if a player is moving purposely
+            if (Input.GetButton("Horizontal") || Input.GetButton("Vertical") || Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
+            {
+                isMoving = true;
+            }
+            else
+            {
+                isMoving = false;
+            }
 
-        // Slide
-        if (onGround && (xzVelocity.magnitude > speedToSlide && isCrouched) && !isSliding)
-        {
-            if (isSprinting)
+            // If Player is on a wall, adjust gravity and speed for how to handle while on a wall.
+            // If player isn't make gravity 10
+            if (onWall)
+            {
+                gravity = 1.5f;
+                AdjustSpeed(wallSpeed);
+            }
+            else
+            {
+                gravity = 10.0f;
+            }
+
+            // What type of move should be used?
+            if (onGround)
+            {
+                if (!isSliding)
+                {
+                    //Debug.Log("Move Called");
+                    Move();
+                }
+            }
+            else if (!onGround && onWall)
+            {
+                isCrouched = false;
+                isSliding = false;
+
+                Check4Wall();
+                //Debug.Log("Wall Move Called");
+                WallMove();
+            }
+            else if (!onGround && isMoving)
+            {
+                //Debug.Log("Air Move Called");
+                AirMove();
+            }
+
+            if (!onWall)
+            {
+                addedWallYForce = false;
+            }
+
+            // Jump
+            if (canJump && Input.GetButtonDown("Jump"))
+            {
+                if (isCrouched && canStand)
+                {
+                    isCrouched = false;
+                }
+
+                Jump();
+            }
+
+            // Sprint
+            if (Input.GetButtonDown("Sprint") && isMoving)
+            {
+                Sprint();
+            }
+            else if (Input.GetAxis("Vertical") <= 0)
             {
                 isSprinting = false;
             }
 
-            //Debug.Log("Calling Slide()");
-            Slide();
-        }
-
-        //Debug.Log("isSliding: " + isSliding + "\tRigid Velocity Mag: " + rigid.velocity.magnitude);
-        // While sliding is still true, check if magnitude goes below 5. If so, set sliding to false and set speed to crouch speed
-        if (isSliding)
-        {
-            if (rigid.velocity.magnitude < 5)
+            // Adjust speed back to regular move speed, sprint speed
+            if (!isCrouched && onGround && !isSprinting)
             {
-                isSliding = false;
-                AdjustSpeed(crouchSpeed);
+                AdjustSpeed(moveSpeed);
             }
-        }
-        
-        //if (!onGround)
-        //{
-        //    isSliding = false;
-        //}
+            if (!isCrouched && onGround && isSprinting)
+            {
+                AdjustSpeed(sprintSpeed);
+            }
 
-        // Apply manual hard-coded gravity
-        rigid.AddForce(new Vector3(0, -gravity * rigid.mass, 0));
+            // Crouch
+            if (Input.GetButtonDown("Slide"))
+            {
+                //Debug.Log("Crouch Pressed");
+                if (isCrouched && canStand)
+                {
+                    isCrouched = false;
+                    isSliding = false;
+
+                    AdjustSpeed(moveSpeed);
+                }
+                else if (!isCrouched && !onGround)
+                {
+                    isCrouched = true;
+                }
+                else if (isCrouched && !onGround)
+                {
+                    isCrouched = false;
+                    isSliding = false;
+                }
+                else
+                {
+                    //Debug.Log("SLIDE BUTTON PRESSED ELSE, speed = crouchSpeed");
+                    if (isSprinting && onGround)
+                    {
+                        isSprinting = false;
+                    }
+                    isCrouched = true;
+                    AdjustSpeed(crouchSpeed);
+                }
+            }
+
+            if (isCrouched)
+            {
+                canStand = !Check4Ceiling();
+            }
+
+            // Slide
+            if (onGround && (xzVelocity.magnitude > speedToSlide && isCrouched) && !isSliding)
+            {
+                if (isSprinting)
+                {
+                    isSprinting = false;
+                }
+
+                //Debug.Log("Calling Slide()");
+                Slide();
+            }
+
+            //Debug.Log("isSliding: " + isSliding + "\tRigid Velocity Mag: " + rigid.velocity.magnitude);
+            // While sliding is still true, check if magnitude goes below 5. If so, set sliding to false and set speed to crouch speed
+            if (isSliding)
+            {
+                if (rigid.velocity.magnitude < 5)
+                {
+                    isSliding = false;
+                    AdjustSpeed(crouchSpeed);
+                }
+            }
+
+            //if (!onGround)
+            //{
+            //    isSliding = false;
+            //}
+
+            // Apply manual hard-coded gravity
+            rigid.AddForce(new Vector3(0, -gravity * rigid.mass, 0));
+        }
     }
 }

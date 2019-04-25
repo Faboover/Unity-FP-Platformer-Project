@@ -8,22 +8,27 @@ public class Goal : MonoBehaviour
 
     public GameObject timer;
 
+    public GameObject musicPlyr;
+
 	// Use this for initialization
 	void Start ()
     {
         goal = false;
 
         timer = GameObject.FindGameObjectWithTag("Time");
+
+        musicPlyr = GameObject.FindGameObjectWithTag("Music");
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Player")
         {
-            Debug.Log("Player entered the goal!");
             goal = true;
 
-            timer.GetComponent<Timer>().StopTImer();
+            timer.GetComponent<Timer>().StopTimer();
+
+            musicPlyr.GetComponent<SceneMusic>().PlayCompletionMusic();
         }
     }
 

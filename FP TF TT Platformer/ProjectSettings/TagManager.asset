@@ -13,6 +13,10 @@ TagManager:
   - Button
   - Handler
   - Kill
+  - Music
+  - Pause
+  - Results
+  - Options
   layers:
   - Default
   - TransparentFX

@@ -11,13 +11,16 @@ public class UISpawner : MonoBehaviour
 
     public GameObject complete;
 
+    public GameObject options;
+
 	// Use this for initialization
 	void Start ()
     {
-        if (hud != null)
-        {
-            hud.SetActive(false);
-        }
+        pause = GameObject.FindGameObjectWithTag("Pause");
+
+        complete = GameObject.FindGameObjectWithTag("Results");
+
+        options = GameObject.FindGameObjectWithTag("Options");
 
         if (pause != null)
         {
@@ -30,12 +33,12 @@ public class UISpawner : MonoBehaviour
         }
     }
 
-    void DisplayHud()
+    public void DisplayHud()
     {
         hud.SetActive(true);
     }
 
-    void DisplayPause()
+    public void DisplayPause()
     {
         if (!complete.activeSelf)
         {
@@ -43,7 +46,7 @@ public class UISpawner : MonoBehaviour
         }
     }
 
-    void DisplayCompletion()
+    public void DisplayCompletion()
     {
         if (!pause.activeSelf)
         {
@@ -51,17 +54,22 @@ public class UISpawner : MonoBehaviour
         }
     }
 
-    void TurnOffHud()
+    public void DisplayOptions()
+    {
+        Debug.Log("Options Not Yet Implemented");
+    }
+
+    public void TurnOffHud()
     {
         hud.SetActive(false);
     }
 
-    void TurnOffPause()
+    public void TurnOffPause()
     {
         pause.SetActive(false);
     }
 
-    void TurnOffCompletion()
+    public void TurnOffCompletion()
     {
         complete.SetActive(false);
     }

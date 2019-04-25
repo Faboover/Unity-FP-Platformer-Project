@@ -26,8 +26,10 @@ public class Timer : MonoBehaviour
         millisecondsS = "00";
     }
 
-    public void StopTImer()
+    public void StopTimer()
     {
+        Debug.Log("Stopping Timer!!");
+
         stop = true;
     }
 
