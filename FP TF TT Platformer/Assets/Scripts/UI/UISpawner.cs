@@ -13,9 +13,14 @@ public class UISpawner : MonoBehaviour
 
     public GameObject options;
 
+    public bool paused;
+
+
 	// Use this for initialization
 	void Start ()
     {
+        hud = GameObject.FindGameObjectWithTag("HUD");
+
         pause = GameObject.FindGameObjectWithTag("Pause");
 
         complete = GameObject.FindGameObjectWithTag("Results");
@@ -31,6 +36,8 @@ public class UISpawner : MonoBehaviour
         {
             complete.SetActive(false);
         }
+
+        paused = false;
     }
 
     public void DisplayHud()
@@ -43,6 +50,10 @@ public class UISpawner : MonoBehaviour
         if (!complete.activeSelf)
         {
             pause.SetActive(true);
+
+            pause.GetComponent<TellEventSys>().FindFirstButton();
+
+            paused = true;
         }
     }
 
@@ -51,6 +62,8 @@ public class UISpawner : MonoBehaviour
         if (!pause.activeSelf)
         {
             complete.SetActive(true);
+
+            complete.GetComponent<TellEventSys>().FindFirstButton();
         }
     }
 
@@ -66,17 +79,31 @@ public class UISpawner : MonoBehaviour
 
     public void TurnOffPause()
     {
+        pause.GetComponent<Pause>().Off();
+
         pause.SetActive(false);
+
+        paused = false;
     }
 
     public void TurnOffCompletion()
     {
+        complete.GetComponent<Pause>().Off();
+
         complete.SetActive(false);
     }
 
     // Update is called once per frame
     void Update ()
     {
-		
+		if (Input.GetButtonDown("Pause") && !paused)
+        {
+            DisplayPause();
+        }
+        else if (Input.GetButtonDown("Cancel") && paused)
+        {
+            Debug.Log("Cancel Pressed");
+            TurnOffPause();
+        }
 	}
 }

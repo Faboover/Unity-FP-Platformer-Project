@@ -68,6 +68,10 @@ public class SceneMusic : MonoBehaviour
             {
                 this.GetComponent<AudioSource>().clip = music[2];
             }
+            else if (SceneManager.GetActiveScene().name.Equals("Level Select"))
+            {
+                PlaySelectionMusic();
+            }
             else
             {
                 while (prevTrack == randNum)

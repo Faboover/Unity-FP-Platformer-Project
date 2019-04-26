@@ -13,6 +13,11 @@ public class LoadScenes : MonoBehaviour
 		
 	}
 	
+    public void CloseGame()
+    {
+        Application.Quit();
+    }
+
     public void LoadTitle()
     {
         SceneManager.LoadScene("Title", LoadSceneMode.Single);

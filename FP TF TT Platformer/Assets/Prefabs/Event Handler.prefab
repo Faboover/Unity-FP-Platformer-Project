@@ -34,9 +34,10 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4280279806963724}
+  - component: {fileID: 114717702304896088}
   m_Layer: 0
   m_Name: UI Handler
-  m_TagString: Untagged
+  m_TagString: UIHandler
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -51,7 +52,7 @@ GameObject:
   - component: {fileID: 4591266195206016}
   - component: {fileID: 114493029279746698}
   m_Layer: 0
-  m_Name: Menu Options
+  m_Name: Scene Handler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -253,3 +254,19 @@ MonoBehaviour:
   - Level4
   - Level5
   - Credits
+--- !u!114 &114717702304896088
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1369343062316014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3103ecd7743afaa488b0b44eda2d0a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hud: {fileID: 0}
+  pause: {fileID: 0}
+  complete: {fileID: 0}
+  options: {fileID: 0}
+  paused: 0

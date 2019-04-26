@@ -62,7 +62,7 @@ GameObject:
   - component: {fileID: 114542368718809974}
   m_Layer: 0
   m_Name: Cam Empty Object
-  m_TagString: Untagged
+  m_TagString: Camera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -260,9 +260,10 @@ MonoBehaviour:
   isTurning: 0
   newWall: 0
   addedWallYForce: 0
+  pause: 0
   jumpHeight: 3
   sensitivityX: 5
-  joySensitivityX: 25
+  joySensitivityX: 35
 --- !u!114 &114123391855315756
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -300,6 +301,7 @@ MonoBehaviour:
   joySensitivityY: 10
   minimumY: -60
   maximumY: 60
+  pause: 1
 --- !u!124 &124751397744601392
 Behaviour:
   m_ObjectHideFlags: 1

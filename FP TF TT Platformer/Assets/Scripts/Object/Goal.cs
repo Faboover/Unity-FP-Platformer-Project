@@ -10,6 +10,8 @@ public class Goal : MonoBehaviour
 
     public GameObject musicPlyr;
 
+    public GameObject ui;
+
 	// Use this for initialization
 	void Start ()
     {
@@ -18,6 +20,8 @@ public class Goal : MonoBehaviour
         timer = GameObject.FindGameObjectWithTag("Time");
 
         musicPlyr = GameObject.FindGameObjectWithTag("Music");
+
+        ui = GameObject.FindGameObjectWithTag("UIHandler");
     }
 
     private void OnTriggerEnter(Collider other)
@@ -29,6 +33,8 @@ public class Goal : MonoBehaviour
             timer.GetComponent<Timer>().StopTimer();
 
             musicPlyr.GetComponent<SceneMusic>().PlayCompletionMusic();
+
+            ui.GetComponent<UISpawner>().DisplayCompletion();
         }
     }
 

@@ -13,7 +13,11 @@ public class PlayerSpawner : MonoBehaviour
     {
         // Spawn the player object at the positon of the spawner with the spawner's rotation
         Instantiate(player, this.transform.position, this.transform.rotation);
-	}
+
+        player = GameObject.FindGameObjectWithTag("Player");
+
+        player.GetComponent<CharacterControls>().spawner = this.gameObject;
+    }
 	
 
     // Place player back at the respawn point during gameplay
@@ -27,8 +31,6 @@ public class PlayerSpawner : MonoBehaviour
         player.transform.rotation = this.transform.rotation;
 
         player.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
-
-        player.GetComponent<CharacterControls>().spawner = this.gameObject;
 
         respawnCount++;
     }

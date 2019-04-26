@@ -16,6 +16,7 @@ public class CharacterControls : MonoBehaviour
 
     private Vector3 prevWallDir = new Vector3(0, 0, 0);
     private Vector3 prevVelocity;
+    private Vector3 holdPos;
 
     public Text test;
 
@@ -792,15 +793,22 @@ public class CharacterControls : MonoBehaviour
 
     public void PausePlayer()
     {
-        prevVelocity = rigid.velocity;
+        if (!pause)
+        {
+            holdPos = this.transform.position;
 
-        rigid.velocity = new Vector3(0, 0, 0);
+            prevVelocity = rigid.velocity;
 
-        pause = true;
+            rigid.velocity = new Vector3(0, 0, 0);
+
+            pause = true;
+        }
     }
 
-    public void UnpausePlayer()
+    public void UnPausePlayer()
     {
+        Debug.Log(prevVelocity);
+
         rigid.velocity = prevVelocity;
 
         pause = false;
@@ -999,6 +1007,10 @@ public class CharacterControls : MonoBehaviour
 
             // Apply manual hard-coded gravity
             rigid.AddForce(new Vector3(0, -gravity * rigid.mass, 0));
+        }
+        else
+        {
+            this.transform.position = holdPos;
         }
     }
 }

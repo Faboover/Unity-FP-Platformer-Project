@@ -17,6 +17,13 @@ TagManager:
   - Pause
   - Results
   - Options
+  - HUD
+  - EventSystem
+  - Camera
+  - Start
+  - Goal
+  - UIHandler
+  - Spawner
   layers:
   - Default
   - TransparentFX

@@ -28,14 +28,14 @@ public class Timer : MonoBehaviour
 
     public void StopTimer()
     {
-        Debug.Log("Stopping Timer!!");
+        //Debug.Log("Stopping Timer!!");
 
         stop = true;
     }
 
     public void ResumeTimer()
     {
-        Debug.Log("RESUMING TIMER");
+        //Debug.Log("RESUMING TIMER");
         stop = false;
     }
 
