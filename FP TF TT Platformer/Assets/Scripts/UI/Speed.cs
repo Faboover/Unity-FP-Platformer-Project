@@ -15,6 +15,7 @@ public class Speed : MonoBehaviour
 
 	}
 	
+    // Find the player, not in start because player isn't in the scene at start
     private void FindPlayer()
     {
         player = GameObject.FindGameObjectWithTag("Player");
@@ -23,6 +24,8 @@ public class Speed : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
+        // If player is null, find them
+        // Else, set the speed text of the player by calling GetXZMag
         if (player == null)
         {
             FindPlayer();

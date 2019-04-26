@@ -22,9 +22,12 @@ public class PlayerStatus : MonoBehaviour
     {
         //status.text = state[0];
 
+        // Set the sprite for status to be the 0 element of images
+        // The 0 element is the Idle icon
         status.sprite = images[0];
 	}
 
+    // Since player is not in the scene to start with, Find the player
     private void FindPlayer()
     {
         player = GameObject.FindGameObjectWithTag("Player");
@@ -32,8 +35,21 @@ public class PlayerStatus : MonoBehaviour
         plyrCntrl = player.GetComponent<CharacterControls>();
     }
 	
+    // Function to determine which image sprite should be displayed
     private void DetermineStatus()
     {
+        /*
+         * 0 - Idle
+         * 1 - Walking
+         * 2 - Sprinting
+         * 3 - Crouching
+         * 4 - Sliding
+         * 5 - In the Air
+         * 6 - Wallrunning
+         * 
+         * Priotitization
+         * Walking > Sprinting > In the Air > Sliding > Crouching > Wallrunning > Idle
+         */ 
         if (plyrCntrl.isMoving && !plyrCntrl.isSprinting && !plyrCntrl.isCrouched && plyrCntrl.onGround)
         {
             //status.text = state[1];
@@ -81,6 +97,8 @@ public class PlayerStatus : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
+        // If Player null, find the player
+        // Once found, Determine which Status Icon to use
 		if (player == null)
         {
             FindPlayer();

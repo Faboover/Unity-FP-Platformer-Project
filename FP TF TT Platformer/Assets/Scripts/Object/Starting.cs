@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Starting : MonoBehaviour
 {
+    // Bool to know when the player starts the time by going through the trigger
     public bool start;
 
     public GameObject timer;
@@ -11,16 +12,17 @@ public class Starting : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        // Make start false to begin with
         start = false;
 
         timer = GameObject.FindGameObjectWithTag("Time");
     }
 
+    // If a Player enters the trigger, either start the run or reset it
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Player" && !start)
         {
-            Debug.Log("Player entered the goal!");
             StartRun();
             return;
         }
@@ -32,12 +34,14 @@ public class Starting : MonoBehaviour
         }
     }
 
+    // Starts the timer of the level
     public void StartRun()
     {
         start = true;
         timer.GetComponent<Timer>().ResumeTimer();
     }
 
+    // Stops and resets the timer of the level
     public void Reset()
     {
         start = false;

@@ -1,6 +1,6 @@
 WindowsStandalone
 PlayerPath?
-C:/Users/fjlef/Desktop/SpeedRunLabs.exe
+C:/Users/fjlef/Desktop/SpeedRunLabs Game Files/SpeedRunLabs.exe
 SceneListBegin?
 Assets/Scenes/Title.unity
 Assets/Scenes/Level Select.unity
@@ -23,7 +23,6 @@ ff05dcdf90651c3d98a9cad3df5e471e UnityEngine.Timeline.dll:UnityEngine.Timeline.C
 92d7a83ea3c7404e484f3b2eed421855 UnityEngine.Timeline.dll:UnityEngine.Timeline.GroupTrack
 92d7a83ea3c7404e484f3b2eed421855 UnityEngine.Timeline.dll:UnityEngine.Timeline.PlayableTrack
 df374c01140c2d578bf70cbd60073d1d UnityEngine.Timeline.dll:UnityEngine.Timeline.TimelineAsset
-05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.Rotate
 a35dc9cca2faebc5f5f1aeb9e8e47bbe UnityEngine.UI.dll:UnityEngine.UI.AspectRatioFitter
 05524b8f659e7bfe5756d1335fec24ba UnityEngine.UI.dll:UnityEngine.EventSystems.BaseInput
 49cd62a578efc0a599b810a2b66cd49c UnityEngine.UI.dll:UnityEngine.UI.Button
@@ -128,6 +127,7 @@ bc68edb0af574bf79f9550ead8ebae5c UnityEngine.HoloLens.dll:UnityEngine.Audio.Audi
 c2275a8bfbb9f9942cad75ecdfded41d UnityEngine.HoloLens.dll:UnityEngine.XR.WSA.SpatialMappingCollider
 45f3431f0103c41611e8d4eec3d439df UnityEngine.HoloLens.dll:UnityEngine.XR.WSA.SpatialMappingRenderer
 0015e6d000690094de087ba3bf10bfb8 Assembly-CSharp.dll:.Timer
+1c7b0e032017f9db8347ce70de01abe6 Assembly-CSharp.dll:.LvlResults
 c21a36f8590830b965f6ab7fe17b61a9 Assembly-CSharp.dll:.Goal
 85b1f0a825f4acf8bc3d0a722dd00479 Assembly-CSharp.dll:.UISpawner
 415378e1d0abb7c18236cf19135f58e8 Assembly-CSharp.dll:.LoadScenes
@@ -166,7 +166,5 @@ c2275a8bfbb9f9942cad75ecdfded41d UnityEngine.HoloLens.dll:UnityEngine.XR.WSA.Spa
 45f3431f0103c41611e8d4eec3d439df UnityEngine.HoloLens.dll:UnityEngine.XR.WSA.SpatialMappingRenderer
 9de3a22eca9aefadba2d10d5987cefe3 UnityEngine.SpatialTracking.dll:UnityEngine.SpatialTracking.TrackedPoseDriver
 97804b327896a7837ac658f186d511ce Assembly-CSharp.dll:.PlayerStatus
-eb68586b8f3bc1a1f0fb35d0669920ab Assembly-CSharp.dll:.Button
-09a9b34cc5171752a94d1132fcacfda1 Assembly-CSharp.dll:.Starting
 de635013d49cce81a2457aa2c6e73c24 Assembly-CSharp.dll:.TellEventSys
-1c7b0e032017f9db8347ce70de01abe6 Assembly-CSharp.dll:.LvlResults
+09a9b34cc5171752a94d1132fcacfda1 Assembly-CSharp.dll:.Starting

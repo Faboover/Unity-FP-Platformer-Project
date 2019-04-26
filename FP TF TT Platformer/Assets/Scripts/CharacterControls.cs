@@ -64,6 +64,7 @@ public class CharacterControls : MonoBehaviour
     public float sensitivityX;
     public float joySensitivityX;
 
+    // Funciton that runs at the start of the Scripts Instance in a scene
     void Awake()
     {
         AdjustSpeed(moveSpeed);
@@ -75,6 +76,8 @@ public class CharacterControls : MonoBehaviour
         pause = false;
     }
 
+    // Rigidbody Function that is called whenever the object this script is attached to's Collider comes in contact with another Collider
+    // Use this funciton to check and see if what is collided with is either ground or a wall
     void OnCollisionEnter(Collision obj)
     {
         //Debug.Log("Rigid Velocity before set to -relative: " + rigid.velocity + 
@@ -92,6 +95,7 @@ public class CharacterControls : MonoBehaviour
         // Goes through all contacts with rigidbody
         foreach (ContactPoint contact in obj.contacts)
         {
+            // If the Y vector of the Normal is high enough, it can be considered ground
             if (contact.normal.y > 0.85)
             {
                 onGround = true;
@@ -108,7 +112,8 @@ public class CharacterControls : MonoBehaviour
                 //    AdjustSpeed(crouchSpeed);
                 //}
             }
-
+            
+            // If the X or Z normals are not flat and the Y Normal is low enough, it can be considered a wall
             if (contact.normal.x != 0 || contact.normal.z != 0)
             {
                 if (!onGround && contact.normal.y < 0.1)
@@ -141,17 +146,21 @@ public class CharacterControls : MonoBehaviour
         */
     }
 
+    // Rigidbody System Function for checking to see if a Collider remains in contact with another Collider
+    // Want to use this to see if player is still on ground or on a wall
     void OnCollisionStay(Collision obj)
     {
         // Goes through all contacts with rigidbody
         foreach (ContactPoint contact in obj.contacts)
         {
+            // If the Y vector of the Normal is high enough, it can be considered ground
             if (contact.normal.y > 0.85)
             {
                 onGround = true;
                 canJump = true;
             }
 
+            // If the X or Z normals are not flat and the Y Normal is low enough, it can be considered a wall
             if (contact.normal.x != 0 || contact.normal.z != 0)
             {
                 if (!onGround && contact.normal.y < 0.1)
@@ -166,6 +175,7 @@ public class CharacterControls : MonoBehaviour
                 }
             }
 
+            // Want to make it so Ground Detection takes Precedence over Wall Detection
             if (onGround)
             {
                 onWall = false;
@@ -173,6 +183,7 @@ public class CharacterControls : MonoBehaviour
         }
     }
 
+    // Rigidbody Function that is called when a Collider exits or stops colliding with another Collider
     void OnCollisionExit(Collision obj)
     {
         //Debug.Log("CollisionExit Detected: Contacts are - " + obj.contacts);
@@ -189,6 +200,8 @@ public class CharacterControls : MonoBehaviour
         */
     }
 
+
+    // Collision Detection Function that is used when a Collider gets in contact with another Collider that is set as a Trigger
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Kill")
@@ -197,6 +210,8 @@ public class CharacterControls : MonoBehaviour
         }
     }
 
+    // Get the Whole Number value of the Rigidbody Velocity's XZ Magnitude
+    // Gets the speed of the player
     public int GetXZMag()
     {
         int xzMag = (int)xzVelocity.magnitude;
@@ -204,6 +219,7 @@ public class CharacterControls : MonoBehaviour
         return xzMag;
     }
 
+    // Find out how much force needs to be applied to reach peak jump height when jumping
     float CalculateJumpVerticalSpeed()
     {
         // From the jump height and gravity we deduce the upwards speed 
@@ -222,12 +238,16 @@ public class CharacterControls : MonoBehaviour
         }
     }
 
+
+    // Function to see if there is another wall while a player is wallrunning
     private void Check4Wall()
     {
         RaycastHit hit;
 
         float distance = 1f;
 
+        // If any of these raycasts hit another object and find they have the same wall normals that can be considered a wall
+        // A new wall has then been found
         if (Physics.Raycast(this.transform.position, -this.transform.right, out hit, distance))
         {
             //Debug.Log("Raycast hit something on the left, " + hit.normal);
@@ -442,8 +462,10 @@ public class CharacterControls : MonoBehaviour
         return Physics.Raycast(this.transform.position, this.transform.up, 1f);
     }
 
+    // Function for Adding Jump Force to the Rigidbody of the player
     void Jump()
     {
+        // If Player is not on a wall, the player is doing a ground jump or double/air jump
         if (!onWall)
         {
             if (onGround)
@@ -453,6 +475,7 @@ public class CharacterControls : MonoBehaviour
 
                 //rigid.AddForce(new Vector3(0, CalculateJumpVerticalSpeed(), 0), ForceMode.VelocityChange);
 
+                // Player was on ground, so if the player has jumped they should no longer be sliding
                 if (isSliding)
                 {
                     isSliding = false;
@@ -466,6 +489,7 @@ public class CharacterControls : MonoBehaviour
 
                 //rigid.AddForce(new Vector3(0, CalculateJumpVerticalSpeed(), 0), ForceMode.VelocityChange);
 
+                // Make sure player is not considered sliding
                 if (isSliding)
                 {
                     isSliding = false;
@@ -480,6 +504,7 @@ public class CharacterControls : MonoBehaviour
 
             //rigid.AddForce(new Vector3(rigid.velocity.x + (wallNormal.x * 10), CalculateJumpVerticalSpeed(), rigid.velocity.z + (wallNormal.y * 10)), ForceMode.VelocityChange);
 
+            // The player was considered to be on a wall, thus the player should no longer be considered to be on a wall
             onWall = false;
             /*
             if ((wallNormal.x < 0 && rigid.velocity.x > 0) || (wallNormal.x > 0 && rigid.velocity.x < 0))
@@ -499,8 +524,11 @@ public class CharacterControls : MonoBehaviour
         //rigid.AddForce(0, CalculateJumpVerticalSpeed(), 0);
     }
 
+    // Function for handling player running
     void Sprint()
     {
+        // If the player is Crouched and they can stand, the player will be able to sprint
+        // if the player is not Crouched, the player can sprint
         if (isCrouched && canStand)
         {
             isCrouched = false;
@@ -516,6 +544,7 @@ public class CharacterControls : MonoBehaviour
         }
     }
 
+    // Funciton for Adding a Slide force to the player Rigidbody
     void Slide()
     {
         isSliding = true;
@@ -534,6 +563,8 @@ public class CharacterControls : MonoBehaviour
             "\n XZVel: " + xzVelocity + "\tXZMag: " + xzVelocity.magnitude);
     }
 
+
+    // Default Move function
     void Move()
     {
         // Calculate how fast we should be moving
@@ -548,9 +579,11 @@ public class CharacterControls : MonoBehaviour
         velocityChange.z = Mathf.Clamp(velocityChange.z, -maxVelocityChange, maxVelocityChange);
         velocityChange.y = 0;
 
+        // Apply the calculated velocityChange Force
         rigid.AddForce(velocityChange, ForceMode.VelocityChange);
     }
 
+    // Movement Function for handling how a player moves through the air/when not on ground
     void AirMove()
     {
         // Calculate how fast we should be moving
@@ -565,14 +598,17 @@ public class CharacterControls : MonoBehaviour
         velocityChange.z = Mathf.Clamp(velocityChange.z, -maxVelocityChange, maxVelocityChange);
         velocityChange.y = 0;
 
+        // Apply the calculated force
         rigid.AddForce(velocityChange * 10);
     }
     
+    // Movement Function for handling how a player should move while on a Wall
     void WallMove()
     {
         // Direction player is trying to move towards, to be used for learning the angle between this direction and the wall
         Vector3 targetAngle = transform.TransformDirection(new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")));
 
+        // Used to see if the wall is in front of the player or behind the player
         bool rayBack = Physics.Raycast(this.transform.position, -this.transform.forward, 0.6f);
         bool rayForward = Physics.Raycast(this.transform.position, this.transform.forward, 0.6f);
 
@@ -589,7 +625,7 @@ public class CharacterControls : MonoBehaviour
             wallDir *= -1;
         }
         
-        // To allow movement away from the wall in the given range
+        // To allow movement away from the wall in the given range based on player's intended direction of movement
         if (angleDif > 45 && angleDif < 135 && isMoving)
         {
             AirMove();
@@ -647,7 +683,8 @@ public class CharacterControls : MonoBehaviour
         velocityChange.z = Mathf.Clamp(velocityChange.z, -maxVelocityChange, maxVelocityChange);
         velocityChange.y = 0;
 
-        
+        // If there is a new wall found while moving along a wall, adjust player movement direction to meet the new wall's direction
+        // Else Move player along the current wall
         if (newWall && !Input.GetButtonDown("Jump"))
         { 
             rigid.AddForce(velocityChange, ForceMode.VelocityChange);
@@ -657,6 +694,8 @@ public class CharacterControls : MonoBehaviour
         {
             rigid.AddForce(velocityChange * speed);
 
+            // Have it so a upwards or downwards force is added when player first connects to a wall
+            // Once done, don't add this force again until player is off a wall and on a new wall
             if (!addedWallYForce)
             {
                 //Debug.Log(rigid.velocity.y);
@@ -664,6 +703,8 @@ public class CharacterControls : MonoBehaviour
                 //Debug.Log(rigid.velocity);
 
                 float yForce = 2500f;
+
+                // If the player's y velocity is high/low enough add a upward/downward force to compensate
                 if (rigid.velocity.y > 5)
                 {
                     //Debug.Log("Adding downward force");
@@ -697,14 +738,18 @@ public class CharacterControls : MonoBehaviour
             }
         }
 
+        // If the player is not turning the camera left or right and the player is moving, have the camera roation adjusted
         if (!isTurning && isMoving)
         {
             AdjustRotation();
         }
     }
 
+    // Funciton to adjust a player's movement speed
     private void AdjustSpeed(float s)
     {
+        // If on a wall, gradually move the speed of the player to the new speed passed through
+        // If not, just set the speed to the passed speed
         if (onWall)
         {
             speed = Mathf.Lerp(speed, s, smoothing * Time.deltaTime);
@@ -715,13 +760,16 @@ public class CharacterControls : MonoBehaviour
         }
     }
 
+    // Function to adjust the rotation of the camera so that it is parallel to the wall the player is in contact with
     private void AdjustRotation()
     {
         // The angle between the vector the player is facing and the angle of the wall
         float angleFacing = Vector3.Angle(wallDir, transform.forward);
 
+        // The hypotenuse
         float h = Mathf.Sqrt(Mathf.Pow(wallDir.x, 2) + Mathf.Pow(wallDir.z, 2));
 
+        // Code to calculate the angle of the wall to rotate the camera to
         float angleofWall;
         if (wallDir.x > -0.001 && wallDir.x < 0.001)
         {
@@ -761,6 +809,7 @@ public class CharacterControls : MonoBehaviour
             }
         }
 
+        // Rate of change of the rotation
         float turningRate = 150f;
 
         /*
@@ -780,8 +829,10 @@ public class CharacterControls : MonoBehaviour
         */
         //Debug.Log("Angleof Wall: " + angleofWall + " Wallx: " + wallDir.x + " Wallz: " + wallDir.z + " H: " + h);
 
+        // Setting the Quaternion that the camera will need to rotate to
         Quaternion quatRot = Quaternion.Euler(0, angleofWall, 0);
 
+        // If the direction the player is facing is within 45 degrees, rotate the player
         if (angleFacing <= 45)
         {
             //transform.rotation = Quaternion.LookRotation(wallDir);
@@ -791,8 +842,11 @@ public class CharacterControls : MonoBehaviour
         }
     }
 
+    // Function to cause the pause of player movement and all other functions
     public void PausePlayer()
     {
+        // If the player is not already pause, set the hold position, prevVelocity and Rigidbody velocity
+        // Also, player is now considered paused
         if (!pause)
         {
             holdPos = this.transform.position;
@@ -805,17 +859,23 @@ public class CharacterControls : MonoBehaviour
         }
     }
 
+    // Function to cause the player to no longer be paused
+    // Set the velocity to the velicity of the player before they were paused
+    // Player no longer considered to be paused
     public void UnPausePlayer()
     {
-        Debug.Log(prevVelocity);
+        //Debug.Log(prevVelocity);
 
         rigid.velocity = prevVelocity;
 
         pause = false;
     }
 
+    // Function that is called in a loop so long as script is a Component of a Active GameObject
     void Update()
     {
+        // If the player is not paused, handle all movement functions and requirements
+        // If not, tell player to stay in hold position cause they are paused
         if (!pause)
         {
             // Helps keep track of current player xz velocity and magnitude
@@ -1010,6 +1070,7 @@ public class CharacterControls : MonoBehaviour
         }
         else
         {
+            // When Paued maintain position of the player at holdPos
             this.transform.position = holdPos;
         }
     }

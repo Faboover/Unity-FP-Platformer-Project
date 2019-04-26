@@ -13,11 +13,14 @@ public class LvlResults : MonoBehaviour
 	// Use this for initialization
 	void Start ()
     {
+        // Find the objects
         timer = GameObject.FindGameObjectWithTag("Time");
 
         spawner = GameObject.FindGameObjectWithTag("Spawner");
 	}
 	
+    // Create a string that displays the information of the scene
+    // Level, Time, and number of restarts
     public string GetResults()
     {
         string text = "LEVEL\n\t\tLevel ";
@@ -43,6 +46,7 @@ public class LvlResults : MonoBehaviour
         return text;
     }
 
+    // Update the text with what is returned from GetResults()
     public void UpdateText()
     {
         this.GetComponent<Text>().text = GetResults();

@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class Timer : MonoBehaviour 
 {
+    // UI Object to display Time on
     public Text time;
 
     float minutes = 0f;
@@ -26,6 +27,7 @@ public class Timer : MonoBehaviour
         millisecondsS = "00";
     }
 
+    // Set stop to be true
     public void StopTimer()
     {
         //Debug.Log("Stopping Timer!!");
@@ -33,12 +35,14 @@ public class Timer : MonoBehaviour
         stop = true;
     }
 
+    // Set stop to be false
     public void ResumeTimer()
     {
         //Debug.Log("RESUMING TIMER");
         stop = false;
     }
 
+    // Set Stop to be true and reset all the values
     public void ResetTimer()
     {
         stop = true;
@@ -54,6 +58,8 @@ public class Timer : MonoBehaviour
 
 	void Update()
     {
+        // If the stop is false, the timer can count up normally
+        // Else, do nothing
         if (!stop)
         {
             if (milliseconds >= 100)
@@ -69,7 +75,9 @@ public class Timer : MonoBehaviour
                 }
                 milliseconds = 0;
             }
+
             milliseconds += Time.deltaTime * 100;
+
             if (minutes < 10)
             {
                 minutesS = "0" + minutes;
@@ -88,6 +96,7 @@ public class Timer : MonoBehaviour
                 secondsS = "" + seconds;
             }
 
+            // Convert to integers to make them whole numbers
             if ((int)milliseconds < 10)
             {
                 millisecondsS = "0" + (int)milliseconds;
@@ -98,6 +107,7 @@ public class Timer : MonoBehaviour
             }
         }
 
+        // Always have the text for the timer to be set by the calculated values
         time.text = minutesS + ":" + secondsS + ":" + millisecondsS;
 	}
 }

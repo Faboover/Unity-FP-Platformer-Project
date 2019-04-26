@@ -4,17 +4,21 @@ using UnityEngine;
 
 public class Goal : MonoBehaviour
 {
+    // Know if the goal has been reached
     public bool goal;
 
     public GameObject timer;
 
+    // Music player of the scene
     public GameObject musicPlyr;
 
+    // UI handler of teh scene
     public GameObject ui;
 
 	// Use this for initialization
 	void Start ()
     {
+        // Set goal to false and find the GameObjects
         goal = false;
 
         timer = GameObject.FindGameObjectWithTag("Time");
@@ -24,6 +28,8 @@ public class Goal : MonoBehaviour
         ui = GameObject.FindGameObjectWithTag("UIHandler");
     }
 
+    // If a player collider enters the trigger, the goal has been reached
+    // Set goal to true, stop the timer, play level complete music, and display the results screen
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Player")
@@ -38,6 +44,7 @@ public class Goal : MonoBehaviour
         }
     }
 
+    // Make goal false
     public void Reset()
     {
         goal = false;
